@@ -3,16 +3,17 @@
 """Extraction of urls and directories from the command line."""
 import argparse
 import os
-from page_loader import loader
 
 
-def compose(g, f):
-    def inner(arg):
+def _compose(g, f):  # noqa: WPS111
+    def inner(arg):  # noqa: WPS430
         return g(f(arg))
     return inner
 
-get_default_directory = compose(os.path.abspath, os.getcwd)
+
+get_default_directory = _compose(os.path.abspath, os.getcwd)
 get_type_directory = os.path.abspath
+
 
 def parse():
     """Parser command line arguments."""
@@ -20,7 +21,7 @@ def parse():
         prog='page-loader',
         description=(
             'Downloads a page from the network at the specified '
-            'address and puts it in the specified folder',
+            'address and puts it in the specified folder',  # noqa: WPS326
         ),
     )
     parser.add_argument(
