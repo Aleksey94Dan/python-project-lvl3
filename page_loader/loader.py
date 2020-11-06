@@ -18,7 +18,7 @@ EXTENSION = '.html'
 def get_name(url: str, replacement_sign: str = '-') -> str:
     """Return the transformed name by pattern."""
     parsed_url = urlparse(url)
-    domain = ''.join((parsed_url.netloc, parsed_url.path))
+    domain = '{}{}'.format(parsed_url.netloc, parsed_url.path)
     pattern = re.compile(r'\W|_')
     return '{}{}'.format(re.sub(pattern, replacement_sign, domain), EXTENSION)
 
