@@ -8,6 +8,8 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup, SoupStrainer
 from pprint import pprint
 import requests
+from itertools import zip_longest
+
 
 USER_AGENT = (
     'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
@@ -15,8 +17,9 @@ USER_AGENT = (
 )
 
 
-EXTENSION: str = '.html'
-REPLACEMENT_SIGN: str = '-'
+EXTENSION = '.html'
+REPLACEMENT_SIGN = '-'
+TAGS = 'link|script|img'
 
 
 def get_path_to_file(url: str, *, directory: str = '') -> str:
@@ -24,7 +27,6 @@ def get_path_to_file(url: str, *, directory: str = '') -> str:
     parsed_url = urlparse(url)
     domain = '{}{}'.format(parsed_url.netloc, parsed_url.path)
     pattern = re.compile(r'\W|_')
-    directory = directory
     name = '{}{}'.format(re.sub(pattern, REPLACEMENT_SIGN, domain), EXTENSION)
     return os.path.join(directory, name)
 
@@ -44,28 +46,26 @@ def load(url: str, *, path_to_file: str = '') -> None:
         response.raise_for_status()
 
 
-def has_src(string):
-    return string is not None and 'src' in string
-
-
-def get_resourse(path_to_file: str) -> None:
+def get_url_resourse(path_to_file: str) -> None:
     with open(path_to_file) as html:
         html = html.read()
-
-    # only_links = SoupStrainer('link', atrr)
-    only_scripts = SoupStrainer('script')
-    # only_img = SoupStrainer('script')
-    soup = BeautifulSoup(html, "html.parser", parse_only=only_scripts)  # for windows
-    print(soup.prettify())
-    # soup = BeautifulSoup(html, "lxml")  # for linux
-    # links = soup.find_all('link')
-    # scripts = soup.find_all('script')
-    # imgs = soup.find_all('img')
-    # pprint(links, scripts, imgs)
-
+    only_tags = SoupStrainer(re.compile(TAGS))
+    soup = BeautifulSoup(html, "lxml", parse_only=only_tags)
+    sripts = soup.find_all('script')
+    links = soup.find_all('link')
+    imgs = soup.find_all('img')
+    urls = []
+    for sript in sripts:
+        urls.append(sript.get('src'))
+    for link in links:
+        urls.append(link.get('href'))
+    for img in imgs:
+        urls.append(img.get('href'))
+    urls = list(filter(None, urls))
+    print(urls)
 
 if __name__ == "__main__":
     url = 'https://hexlet.io/courses'
     path_to_file = get_path_to_file(url)
-    load(url, path_to_file=path_to_file)
-    get_resourse(path_to_file)
+    # load(url, path_to_file=path_to_file)
+    get_url_resourse(path_to_file)

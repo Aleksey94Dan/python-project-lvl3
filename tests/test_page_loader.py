@@ -29,3 +29,6 @@ def test_load(url):
         path_to_file = os.path.join(tmpdirname, name)
         loader.load(url, directory=tmpdirname)
         assert os.path.isfile(path_to_file)
+
+
+
