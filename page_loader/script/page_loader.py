@@ -10,7 +10,6 @@ from page_loader import cli, loader
 def main() -> None:
     """Run a code."""
     path_to_file, url = cli.parse()
-    loader.load(url, path_to_file)
 
 
 if __name__ == '__main__':

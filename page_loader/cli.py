@@ -5,14 +5,13 @@ import argparse
 import os
 
 
-def _compose(g, f):  # noqa: WPS111
-    def inner(arg):  # noqa: WPS430
-        return g(f(arg))
-    return inner
-
-
-get_default_directory = _compose(os.path.abspath, os.getcwd)
-get_type_directory = os.path.abspath
+def dir_path(path):
+    """Check if the specified directory exists."""
+    if os.path.isdir(path):
+        return path
+    raise argparse.ArgumentTypeError(
+        '{0} is not valid path'.format(path),
+    )
 
 
 def parse():
@@ -21,22 +20,20 @@ def parse():
         prog='page-loader',
         description=(
             'Downloads a page from the network at the specified '
-            'address and puts it in the specified folder',  # noqa: WPS326
+            'address and puts it in the specified folder'  # noqa: WPS326
         ),
     )
     parser.add_argument(
         '-O',
         '--output',
-        default=get_default_directory,
-        type=get_type_directory,
-        help='set directory of saving',
+        type=dir_path,
+        default=os.getcwd(),
+        help='The directory where to save files',
     )
     parser.add_argument(
         'url',
-        help='enter url',
+        type=str,
+        help='Enter the correct page address',
     )
     args = parser.parse_args()
-    return (
-        args.output,
-        args.url,
-    )
+    return args.output, args.url

@@ -8,7 +8,6 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup, SoupStrainer
 from pprint import pprint
 import requests
-from itertools import zip_longest
 
 
 USER_AGENT = (
@@ -16,56 +15,71 @@ USER_AGENT = (
     ' (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36'  # noqa: WPS326
 )
 
-
-EXTENSION = '.html'
 REPLACEMENT_SIGN = '-'
 TAGS = 'link|script|img'
 
 
-def get_path_to_file(url: str, *, directory: str = '') -> str:
+def get_name(url: str) -> str:
     """Return the transformed name by pattern."""
     parsed_url = urlparse(url)
     domain = '{}{}'.format(parsed_url.netloc, parsed_url.path)
+    domain, extension = os.path.splitext(domain)
+    if extension == '':
+        extension = '.html'
     pattern = re.compile(r'\W|_')
-    name = '{}{}'.format(re.sub(pattern, REPLACEMENT_SIGN, domain), EXTENSION)
-    return os.path.join(directory, name)
+    name = re.sub(pattern, REPLACEMENT_SIGN, domain)
+    return '{}{}'.format(name, extension)
 
 
-def load(url: str, *, path_to_file: str = '') -> None:
+def get_directory(name: str, *, directory: str = ''):
+    name, extension = os.path.splitext(neme)
+    if extension == '.html':
+        name = '{}{}'.format(name, '_files')
+    path_to_dir = os.path.join(directory, name)
+    if os.path.exists(path_to_dir):
+        return path_to_dir
+    else:
+        os.mkdir(path_to_dir)
+        return path_to_dir
+
+
+
+def load(url: str, *, directory: str = '') -> None:
     """Download html document to the specified directory."""
     headers = {'user-agent': USER_AGENT}
     response = requests.get(url, headers=headers)
     if response.status_code == requests.codes.all_ok:
         if response.encoding:
+            name = get_name(url)
+            path_to_file = make_directory(name, directory=directory)
             with open(path_to_file, 'w') as html:
                 html.write(response.text)
         else:
             with open(path_to_file, 'wb') as html:
                 html.write(response.content)
-    else:
-        response.raise_for_status()
+    response.raise_for_status()
 
 
-def get_url_resourse(path_to_file: str) -> None:
-    with open(path_to_file) as html:
-        html = html.read()
-    only_tags = SoupStrainer(re.compile(TAGS))
-    soup = BeautifulSoup(html, "lxml", parse_only=only_tags)
-    sripts = soup.find_all('script')
-    links = soup.find_all('link')
-    imgs = soup.find_all('img')
-    urls = []
-    for sript in sripts:
-        urls.append(sript.get('src'))
-    for link in links:
-        urls.append(link.get('href'))
-    for img in imgs:
-        urls.append(img.get('href'))
-    urls = list(filter(None, urls))
-    print(urls)
+# def get_url_resourse(path_to_file: str) -> None:
+#     with open(path_to_file) as html:
+#         html = html.read()
+#     only_tags = SoupStrainer(re.compile(TAGS))
+#     soup = BeautifulSoup(html, "lxml", parse_only=only_tags)
+#     sripts = soup.find_all('script')
+#     links = soup.find_all('link')
+#     imgs = soup.find_all('img')
+#     urls = []
+#     for sript in sripts:
+#         urls.append(sript.get('src'))
+#     for link in links:
+#         urls.append(link.get('href'))
+#     for img in imgs:
+#         urls.append(img.get('href'))
+#     urls = list(filter(None, urls))
+#     return urls
+
+
 
 if __name__ == "__main__":
     url = 'https://hexlet.io/courses'
-    path_to_file = get_path_to_file(url)
-    # load(url, path_to_file=path_to_file)
-    get_url_resourse(path_to_file)
+    load(url, directory='abc')
