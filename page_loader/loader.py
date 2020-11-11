@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup, SoupStrainer
 from pprint import pprint
 import requests
+from pprint import pprint
 
 
 USER_AGENT = (
@@ -31,15 +32,23 @@ def get_name(url: str) -> str:
     return '{}{}'.format(name, extension)
 
 
+def has_domain(url):
+    if url is None:
+        return False
+    parse_uri = urlparse(url)
+    if parse_uri.netloc:
+        return True
+    return False
+
 def get_directory(name: str, *, directory: str = ''):
-    name, extension = os.path.splitext(neme)
+    name, extension = os.path.splitext(name)
     if extension == '.html':
         name = '{}{}'.format(name, '_files')
     path_to_dir = os.path.join(directory, name)
     if os.path.exists(path_to_dir):
         return path_to_dir
     else:
-        os.mkdir(path_to_dir)
+        os.makedirs(path_to_dir)
         return path_to_dir
 
 
@@ -51,7 +60,7 @@ def load(url: str, *, directory: str = '') -> None:
     if response.status_code == requests.codes.all_ok:
         if response.encoding:
             name = get_name(url)
-            path_to_file = make_directory(name, directory=directory)
+            path_to_file = os.path.join(directory, name)
             with open(path_to_file, 'w') as html:
                 html.write(response.text)
         else:
@@ -60,26 +69,34 @@ def load(url: str, *, directory: str = '') -> None:
     response.raise_for_status()
 
 
-# def get_url_resourse(path_to_file: str) -> None:
-#     with open(path_to_file) as html:
-#         html = html.read()
-#     only_tags = SoupStrainer(re.compile(TAGS))
-#     soup = BeautifulSoup(html, "lxml", parse_only=only_tags)
-#     sripts = soup.find_all('script')
-#     links = soup.find_all('link')
-#     imgs = soup.find_all('img')
-#     urls = []
-#     for sript in sripts:
-#         urls.append(sript.get('src'))
-#     for link in links:
-#         urls.append(link.get('href'))
-#     for img in imgs:
-#         urls.append(img.get('href'))
-#     urls = list(filter(None, urls))
-#     return urls
+def get_url_resourse(path_to_file: str) -> None:
+    with open(path_to_file) as html:
+        html = html.read()
+    only_tags = SoupStrainer(re.compile(TAGS))
+    soup = BeautifulSoup(html, "lxml", parse_only=only_tags)
+    sripts = soup.find_all('script')
+    links = soup.find_all('link')
+    imgs = soup.find_all('img')
+    urls = []
+    for sript in sripts:
+        urls.append(sript.get('src'))
+    for link in links:
+        urls.append(link.get('href'))
+    for img in imgs:
+        urls.append(img.get('href'))
+    urls = list(filter(has_domain, urls))
+    return urls
 
 
 
 if __name__ == "__main__":
     url = 'https://hexlet.io/courses'
-    load(url, directory='abc')
+    name = get_name(url)
+    path_to_save = 'abc'
+    load(url, directory=path_to_save)
+    directory_for_locale = get_directory(name, directory=path_to_save)
+    print(directory_for_locale)
+
+    # print(name)
+    # directory = os.path.join(path_to_save, get_directory(name))
+    # print(directory)

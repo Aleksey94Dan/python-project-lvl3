@@ -21,21 +21,12 @@ def test_name(url):
     assert re.fullmatch(pattern, name_file)
 
 
-# @pytest.mark.parametrize("url", [URL])
-def test_load(url):
+@pytest.mark.parametrize("url", [URL])
+def test_load_page(url):
     """Test of page load"""
     with tempfile.TemporaryDirectory() as tmpdirname:
         name_file = loader.get_name(url)
         path_to_file = os.path.join(tmpdirname, name_file)
-        path_to_dir = os.path.join(tmpdirname, )
         loader.load(url, directory=tmpdirname)
         assert os.path.isfile(path_to_file)
-        asser os.path.isdir(path_to_dir)
-        # assert os.path.isdir(directory)
-
-
-
-if __name__ == "__main__":
-    test_load(URL)
-
 
