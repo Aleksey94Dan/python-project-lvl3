@@ -10,6 +10,7 @@ python = "^3.7"
 requests = "^2.24.0"
 bs4 = "^0.0.1"
 lxml = "^4.6.1"
+pytest-httpserver = "^0.3.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"
