@@ -2,58 +2,64 @@
 
 """Testing all modules page-loader."""
 
+import os
 import re
+from tempfile import TemporaryDirectory
+
 import pytest
+import requests_mock
 
 from page_loader import loader
-from pytest_localserver.http import WSGIServer
 
-PATH_TO_HTML = 'path_to_file'
+URL = 'https://ru.hexlet.io/courses'
+
+with open('tests/fixture/site/index.html') as html:
+    FORMS = html.read()
 
 with open('tests/fixture/actual_urls') as urls:
     ACTUAL_URLS = urls.read().strip().splitlines()
 
 
-
 @pytest.mark.parametrize('url', ACTUAL_URLS)
-def test_get_name_from_url(url):
+def test_get_name_from_url(url: str) -> None:
+    """Test transformed name by pattern."""
     expected_pattern = re.compile(r'^[\w-]+\.html')
     assert re.fullmatch(expected_pattern, loader.get_name_from_url(url))
 
 
 @pytest.mark.parametrize('url, message', [
-    ('www.example.com/index.html', "'www.example.com/index.html' string has not scheme or netloc"),
-    ('/index', "'/index' string has not scheme or netloc"),
-    ('', "Missing URL!"),
-    ('www.example.com/' + '/a'*2000, 'Your URL has passed the actual limit of 2000 characters.')
+    (
+        'www.example.com/index.html',
+        "'www.example.com/index.html' string has not scheme or netloc",
+    ),
+    (
+        '/index',
+        "'/index' string has not scheme or netloc",
+    ),
+    ('', 'Missing URL!'),
+    (
+        'www.example.com/{0}'.format('a' * loader.LIMITER_LENGTH_URL),
+        'Your URL has passed the actual limit of 2000 characters.',
+    ),
 ])
-def test_get_name_from_url_exception(url, message):
+def test_get_name_from_url_exception(url: str, message: str) -> None:
+    """Test exception transformed name by pattern."""
     with pytest.raises(ValueError, match=message):
         loader.get_name_from_url(url)
 
-        
-def app(environ, start_reponse):
-    """Simple test application."""
 
-    status = '200 OK'
-    response_headers = ['Content-type', 'text/html']
-
-    with open(PATH_TO_HTML) as f:
-        html = f.read()
-    start_reponse(status, response_headers)
-    return [html.encode('utf-8')]
+def test_scrape(requests_mock) -> None:  # noqa: WPS442
+    """Test scrape."""
+    requests_mock.get(URL, text=FORMS)
+    assert FORMS == loader.scrape(URL)
 
 
-@pytest.fixture
-def testserver(request):
-    """Defines the testserver funcarg."""
-    server = WSGIServer(application=app)
-    server.start()
-    request.addfinalizer(testserver)
-    return server
-
-
-def test_retrieve_some_content(testserver):
-    with open(PATH_TO_HTML) as f:
-        expected = f.read()
-    assert loader.scrape(testserver.url) == expected.encode('utf-8')
+def test_download() -> None:
+    """Test os load page."""
+    with TemporaryDirectory() as tmpdirname:
+        name_file = loader.get_name_from_url(URL)
+        path_to_file = os.path.join(tmpdirname, name_file)
+        with requests_mock.Mocker() as mocker:
+            mocker.get(URL, text=FORMS)
+            loader.download(URL, directory=tmpdirname)
+        assert os.path.exists(path_to_file)
