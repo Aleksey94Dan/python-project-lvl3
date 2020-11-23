@@ -49,7 +49,7 @@ def scrape(url: str) -> Union[str, bytes]:
     return response.content
 
 
-def download(url: str, *, directory: str) -> None:
+def download(url: str, directory: str) -> None:
     """Download and save."""
     document = scrape(url)
     name_file = get_name_from_url(url)
@@ -59,3 +59,4 @@ def download(url: str, *, directory: str) -> None:
         mode = 'wb'
     with open(path_to_save, mode=mode) as form:
         form.write(document)
+    return path_to_save
