@@ -17,3 +17,17 @@ Also you must have pip installed - The Python Package Installer.
 # Installation
 
     pip install -U -i https://test.pypi.org/simple/ aleksey94dan-page-load --extra-index-url https://pypi.org/simple
+
+    [![asciicast](https://asciinema.org/a/yeGqzqMxnapSBG02xzb9ZWsfK.svg)](https://asciinema.org/a/yeGqzqMxnapSBG02xzb9ZWsfK)
+
+# Application call example
+
+    Download to current directory
+
+    page-load https://github.com/Aleksey94Dan/python-project-lvl3
+
+    [![asciicast](https://asciinema.org/a/83IKDgTpSxq8Bz6mHD38VATMN.svg)](https://asciinema.org/a/83IKDgTpSxq8Bz6mHD38VATMN)
+
+    Download to installed existing directory
+
+    [![asciicast](https://asciinema.org/a/YfnjF6Qn2M4pCx8kAbJJgBGcC.svg)](https://asciinema.org/a/YfnjF6Qn2M4pCx8kAbJJgBGcC)
