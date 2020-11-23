@@ -24,11 +24,11 @@ Also you must have pip installed - The Python Package Installer.
 
     Download to current directory
 
-    page-load https://github.com/Aleksey94Dan/python-project-lvl3
+    page-loader https://github.com/Aleksey94Dan/python-project-lvl3
 
 [![asciicast](https://asciinema.org/a/83IKDgTpSxq8Bz6mHD38VATMN.svg)](https://asciinema.org/a/83IKDgTpSxq8Bz6mHD38VATMN)
 
     Download to installed existing directory
-    page-load --output example2 https://github.com/Aleksey94Dan/python-project-lvl3
+    page-loader --output example2 https://github.com/Aleksey94Dan/python-project-lvl3
 
 [![asciicast](https://asciinema.org/a/YfnjF6Qn2M4pCx8kAbJJgBGcC.svg)](https://asciinema.org/a/YfnjF6Qn2M4pCx8kAbJJgBGcC)
