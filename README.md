@@ -26,8 +26,8 @@ Also you must have pip installed - The Python Package Installer.
 
     page-load https://github.com/Aleksey94Dan/python-project-lvl3
 
-    [![asciicast](https://asciinema.org/a/83IKDgTpSxq8Bz6mHD38VATMN.svg)](https://asciinema.org/a/83IKDgTpSxq8Bz6mHD38VATMN)
+[![asciicast](https://asciinema.org/a/83IKDgTpSxq8Bz6mHD38VATMN.svg)](https://asciinema.org/a/83IKDgTpSxq8Bz6mHD38VATMN)
 
     Download to installed existing directory
 
-    [![asciicast](https://asciinema.org/a/YfnjF6Qn2M4pCx8kAbJJgBGcC.svg)](https://asciinema.org/a/YfnjF6Qn2M4pCx8kAbJJgBGcC)
+[![asciicast](https://asciinema.org/a/YfnjF6Qn2M4pCx8kAbJJgBGcC.svg)](https://asciinema.org/a/YfnjF6Qn2M4pCx8kAbJJgBGcC)
