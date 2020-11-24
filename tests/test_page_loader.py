@@ -54,7 +54,7 @@ def test_scrape(requests_mock) -> None:  # noqa: WPS442
     assert FORMS == loader.scrape(URL)
 
 
-def test_download() -> None:
+def test_download() -> None:  # noqa: WPS210
     """Test of load page."""
     with TemporaryDirectory() as tmpdirname:
         base_name = loader.get_name_from_url(URL)
@@ -67,5 +67,5 @@ def test_download() -> None:
         assert os.path.isdir(path_to_directory)
 
         files = os.listdir(path_to_directory)
-        image = list(filter(lambda x: x.endswitch('.jpg'), files))
+        image = list(filter(lambda img: img.endswith('.jpg'), files))
         assert len(image)
