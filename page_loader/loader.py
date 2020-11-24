@@ -49,7 +49,7 @@ def scrape(url: str) -> Union[str, bytes]:
     return response.content
 
 
-def download(url: str, directory: str) -> str:
+def download(url: str, directory: str) -> str:  # noqa: WPS210
     """Download and save."""
     base_document = scrape(url)
     base_name = get_name_from_url(url)
@@ -58,8 +58,6 @@ def download(url: str, directory: str) -> str:
     if base_name.endswith('.html'):
         base_directory = path_to_save.replace('.html', '_files')
         os.makedirs(base_directory)
-
-    
 
     mode = 'w'
 
