@@ -11,7 +11,7 @@ import requests_mock
 
 from page_loader import loader
 
-URL = 'https://ru.hexlet.io/courses'
+URL = 'https://aleksey94dan.github.io/'
 
 with open('tests/fixture/site/index.html') as html:
     FORMS = html.read()
@@ -55,11 +55,17 @@ def test_scrape(requests_mock) -> None:  # noqa: WPS442
 
 
 def test_download() -> None:
-    """Test os load page."""
+    """Test of load page."""
     with TemporaryDirectory() as tmpdirname:
-        name_file = loader.get_name_from_url(URL)
-        path_to_file = os.path.join(tmpdirname, name_file)
+        base_name = loader.get_name_from_url(URL)
+        path_to_base_file = os.path.join(tmpdirname, base_name)
+        path_to_directory = path_to_base_file.replace('.html', '_files')
         with requests_mock.Mocker() as mocker:
             mocker.get(URL, text=FORMS)
             loader.download(URL, directory=tmpdirname)
-        assert os.path.exists(path_to_file)
+        assert os.path.isfile(path_to_base_file)
+        assert os.path.isdir(path_to_directory)
+
+        files = os.listdir(path_to_directory)
+        image = list(filter(lambda x: x.endswitch('.jpg'), files))
+        assert len(image)
