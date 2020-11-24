@@ -51,12 +51,21 @@ def scrape(url: str) -> Union[str, bytes]:
 
 def download(url: str, directory: str) -> str:
     """Download and save."""
-    document = scrape(url)
-    name_file = get_name_from_url(url)
-    path_to_save = os.path.join(directory, name_file)
+    base_document = scrape(url)
+    base_name = get_name_from_url(url)
+    path_to_save = os.path.join(directory, base_name)
+
+    if base_name.endswith('.html'):
+        base_directory = path_to_save.replace('.html', '_files')
+        os.makedirs(base_directory)
+
+    
+
     mode = 'w'
-    if isinstance(document, bytes):
+
+    if isinstance(base_document, bytes):
         mode = 'wb'
     with open(path_to_save, mode=mode) as form:
-        form.write(document)
+        form.write(base_document)
+
     return path_to_save
