@@ -16,14 +16,17 @@ URL = 'https://aleksey94dan.github.io/'
 with open('tests/fixture/site/index.html') as html:
     FORMS = html.read()
 
-with open('tests/fixture/actual_urls') as urls:
-    ACTUAL_URLS = urls.read().strip().splitlines()
+with open('tests/fixture/actual_base_urls') as base_urls:
+    ACTUAL_BASE_URLS = base_urls.read().strip().splitlines()
+
+with open('tests/fixture/actual_local_urls') as local_urls:
+    ACTUAL_LOCAL_URLS = local_urls.read().strip().splitlines()
 
 
-@pytest.mark.parametrize('url', ACTUAL_URLS)
+@pytest.mark.parametrize('url', ACTUAL_BASE_URLS)
 def test_get_name_from_url(url: str) -> None:
-    """Test transformed name by pattern."""
-    expected_pattern = re.compile(r'^[\w-]+\.html')
+    """Test transformed name by pattern for base url."""
+    expected_pattern = re.compile(r'^\w+\-?(\w+\-?)+\.html')
     assert re.fullmatch(expected_pattern, loader.get_name_from_url(url))
 
 
@@ -48,6 +51,14 @@ def test_get_name_from_url_exception(url: str, message: str) -> None:
         loader.get_name_from_url(url)
 
 
+@pytest.mark.parametrize('url', ACTUAL_LOCAL_URLS)
+def test_get_name_from_local_resourse(url: str) -> None:
+    """Test transformed name by pattern for local url."""
+    expected_pattern = re.compile(r'^\w+\-?(\w+\-?)+\.(css|jpg|png|js)')
+    print(loader.get_name_for_local_resource(url))
+    assert re.fullmatch(expected_pattern, loader.get_name_for_local_resource(url))
+
+
 def test_scrape(requests_mock) -> None:  # noqa: WPS442
     """Test scrape."""
     requests_mock.get(URL, text=FORMS)
@@ -59,13 +70,9 @@ def test_download() -> None:  # noqa: WPS210
     with TemporaryDirectory() as tmpdirname:
         base_name = loader.get_name_from_url(URL)
         path_to_base_file = os.path.join(tmpdirname, base_name)
-        path_to_directory = path_to_base_file.replace('.html', '_files')
+        path_to_base_directory = path_to_base_file.replace('.html', '_files')
         with requests_mock.Mocker() as mocker:
             mocker.get(URL, text=FORMS)
             loader.download(URL, directory=tmpdirname)
         assert os.path.isfile(path_to_base_file)
-        assert os.path.isdir(path_to_directory)
-
-        files = os.listdir(path_to_directory)
-        image = list(filter(lambda img: img.endswith('.jpg'), files))
-        assert len(image)
+        assert os.path.isdir(path_to_base_directory)
