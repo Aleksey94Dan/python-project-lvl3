@@ -6,14 +6,21 @@
 import os
 import re
 from typing import Union
-from urllib.parse import unquote, urlparse
-
+from urllib.parse import unquote, urlparse, urljoin
+from bs4 import BeautifulSoup
 import requests
 
 ATRIBUTES = ('scheme', 'netloc')
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
 LIMITER_LENGTH_URL = 2000
+
+def get_name_for_local_resource(url: str) -> str:
+    name, extension = os.path.splitext(url)
+    name = name.strip('/')
+    pattern = re.compile(r'\b(\W|_)+')
+    name = re.sub(pattern, REPLACEMENT_SIGN, name)
+    return '{0}{1}'.format(name, extension)
 
 
 def get_name_from_url(url: str) -> str:
@@ -34,8 +41,8 @@ def get_name_from_url(url: str) -> str:
     if not all((getattr(parsed_url, atribute) for atribute in ATRIBUTES)):
         raise ValueError("'{0}' string has not scheme or netloc".format(url))
 
-    domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path)
-    pattern = re.compile(r'\W|_')
+    domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path).strip('/')
+    pattern = re.compile(r'\b(\W|_)+')
     name = re.sub(pattern, REPLACEMENT_SIGN, domain)
     return '{0}{1}'.format(name, EXTENSION)
 
@@ -57,13 +64,26 @@ def download(url: str, directory: str) -> str:  # noqa: WPS210
 
     if base_name.endswith('.html'):
         base_directory = path_to_save.replace('.html', '_files')
-        os.makedirs(base_directory)
+        if not os.path.exists(base_directory):
+            os.mkdir(base_directory)
 
-    mode = 'w'
-
-    if isinstance(base_document, bytes):
-        mode = 'wb'
-    with open(path_to_save, mode=mode) as form:
+    with open(path_to_save, 'w') as form:
         form.write(base_document)
 
-    return path_to_save
+    # soup = BeautifulSoup(base_document, 'lxml')
+    # img = soup.find('img')
+    # img_url = urljoin(url, img.get('src'))
+
+    # content = scrape(img_url)
+    # name_content = get_name_for_local_resource(img.get('src'))
+    # path_to_save = os.path.join(base_directory, name_content)
+    # print(path_to_save)
+
+    # with open(path_to_save, 'wb') as f:
+    #     f.write(content)
+
+    # return path_to_save
+
+
+if __name__ == "__main__":
+    download('https://aleksey94dan.github.io/', 'abc' )
