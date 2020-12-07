@@ -6,16 +6,19 @@
 import os
 import re
 from typing import Union
-from urllib.parse import unquote, urlparse, urljoin
-from bs4 import BeautifulSoup
+from urllib.parse import unquote, urljoin, urlparse
+
 import requests
+from bs4 import BeautifulSoup
 
 ATRIBUTES = ('scheme', 'netloc')
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
 LIMITER_LENGTH_URL = 2000
 
+
 def get_name_for_local_resource(url: str) -> str:
+    """Return the transormed name by pattern for local url."""
     name, extension = os.path.splitext(url)
     name = name.strip('/')
     pattern = re.compile(r'\b(\W|_)+')
@@ -24,7 +27,7 @@ def get_name_for_local_resource(url: str) -> str:
 
 
 def get_name_from_url(url: str) -> str:
-    """Return the transformed name by pattern."""
+    """Return the transformed name by pattern for base url."""
     if not url:
         raise ValueError('Missing URL!')
 
@@ -56,7 +59,7 @@ def scrape(url: str) -> Union[str, bytes]:
     return response.content
 
 
-def download(url: str, directory: str) -> str:  # noqa: WPS210
+def download(url: str, directory: str) -> None:  # noqa: WPS210
     """Download and save."""
     base_document = scrape(url)
     base_name = get_name_from_url(url)
@@ -67,23 +70,22 @@ def download(url: str, directory: str) -> str:  # noqa: WPS210
         if not os.path.exists(base_directory):
             os.mkdir(base_directory)
 
+    soup = BeautifulSoup(base_document, 'lxml')
+    img = soup.find('img')
+    url_img = img.get('src')
+    _, base_directory = os.path.split(base_directory)
+    local_url = os.path.join(
+        base_directory,
+        get_name_for_local_resource(url_img),
+    )
+    img['src'] = local_url
+
     with open(path_to_save, 'w') as form:
-        form.write(base_document)
+        form.write(soup.prettify(formatter='html5'))
 
-    # soup = BeautifulSoup(base_document, 'lxml')
-    # img = soup.find('img')
-    # img_url = urljoin(url, img.get('src'))
-
-    # content = scrape(img_url)
-    # name_content = get_name_for_local_resource(img.get('src'))
-    # path_to_save = os.path.join(base_directory, name_content)
-    # print(path_to_save)
-
-    # with open(path_to_save, 'wb') as f:
-    #     f.write(content)
-
-    # return path_to_save
-
-
-if __name__ == "__main__":
-    download('https://aleksey94dan.github.io/', 'abc' )
+    new_url = urljoin(url, url_img)
+    image = scrape(new_url)
+    path_to_save = os.path.join(directory, local_url)
+    if isinstance(image, bytes):
+        with open(path_to_save, 'wb') as f_img:
+            f_img.write(image)
