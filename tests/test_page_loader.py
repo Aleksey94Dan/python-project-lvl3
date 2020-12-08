@@ -7,13 +7,12 @@ import re
 from tempfile import TemporaryDirectory
 
 import pytest
-import requests_mock
 
 from page_loader import loader
 
 BASE_URL = 'https://aleksey94dan.github.io/'
-CONTENT_URL = 'https://aleksey94dan.github.io/'
-
+CONTENT_URL = 'https://aleksey94dan.github.io/assets/professions/nodejs.png'
+NAME_IMAGE = 'assets-professions-nodejs.png'
 
 with open('tests/fixture/site/index.html') as html:
     FORMS = html.read()
@@ -35,6 +34,7 @@ with open('tests/fixture/actual_local_urls') as local_urls:
 def test_get_name_from_url(url: str) -> None:
     """Test transformed name by pattern for base url."""
     expected_pattern = re.compile(r'^\w+\-?(\w+\-?)+\.html')
+
     assert re.fullmatch(expected_pattern, loader.get_name_from_url(url))
 
 
@@ -66,38 +66,31 @@ def test_get_name_from_url_exception(url: str, message: str) -> None:
 def test_get_name_from_local_resourse(url: str) -> None:
     """Test transformed name by pattern for local url."""
     expected_pattern = re.compile(r'^\w+\-?(\w+\-?)+\.(css|jpg|png|js)')
+
     assert re.fullmatch(
         expected_pattern, loader.get_name_for_local_resource(url),
     )
 
 
-@pytest.mark.parametrize(  # noqa: WPS317
-    ('forms', 'image'),
-    [
-        (FORMS, None),
-        (None, CONTENT),
-    ],
-)
-def test_scrape_text(requests_mock, forms, image) -> None:  # noqa: WPS442
+def test_scrape_text(requests_mock) -> None:  # noqa: WPS442
     """Test scrape text and content."""
-    requests_mock.get(BASE_URL, text=forms, content=image)
-    if forms:
-        assert FORMS == loader.scrape(BASE_URL)
-    if image:
-        assert CONTENT == loader.scrape(CONTENT_URL)
+    requests_mock.get(BASE_URL, text=FORMS)
+    requests_mock.get(CONTENT_URL, content=CONTENT)
+
+    assert FORMS == loader.scrape(BASE_URL)
+    assert CONTENT == loader.scrape(CONTENT_URL)
 
 
-def test_download() -> None:  # noqa: WPS210
+def test_download(requests_mock) -> None:  # noqa: WPS210
     """Test of load page."""
     with TemporaryDirectory() as tmpdirname:
         base_name = loader.get_name_from_url(BASE_URL)
         path_to_base_file = os.path.join(tmpdirname, base_name)
         path_to_base_directory = path_to_base_file.replace('.html', '_files')
-        with requests_mock.Mocker() as mocker:
-            mocker.get(BASE_URL, text=FORMS)
-            loader.download(BASE_URL, directory=tmpdirname)
-            with open(path_to_base_file) as base_file:
-                actual_html = base_file.read()
+        requests_mock.get(BASE_URL, text=FORMS)
+        requests_mock.get(CONTENT_URL, content=CONTENT)
+        loader.download(BASE_URL, directory=tmpdirname)
+
         assert os.path.isfile(path_to_base_file)
         assert os.path.isdir(path_to_base_directory)
-        assert EXPECTED_FORMS.encode('utf-8') == actual_html.encode('utf-8')
+        assert NAME_IMAGE in os.listdir(path_to_base_directory)
