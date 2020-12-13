@@ -7,23 +7,15 @@ import os
 import re
 from typing import Union
 from urllib.parse import unquote, urljoin, urlparse
+import requests_mock
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 
 ATRIBUTES = ('scheme', 'netloc')
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
 LIMITER_LENGTH_URL = 2000
-
-
-def get_name_for_local_resource(url: str) -> str:
-    """Return the transormed name by pattern for local url."""
-    name, extension = os.path.splitext(url)
-    name = name.strip('/')
-    pattern = re.compile(r'\b(\W|_)+')
-    name = re.sub(pattern, REPLACEMENT_SIGN, name)
-    return '{0}{1}'.format(name, extension)
 
 
 def get_name_from_url(url: str) -> str:
@@ -37,17 +29,15 @@ def get_name_from_url(url: str) -> str:
                 LIMITER_LENGTH_URL,
             ),
         )
-
-    url = unquote(url)
-    parsed_url = urlparse(url)
-
-    if not all((getattr(parsed_url, atribute) for atribute in ATRIBUTES)):
-        raise ValueError("'{0}' string has not scheme or netloc".format(url))
-
-    domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path).strip('/')
     pattern = re.compile(r'\b(\W|_)+')
-    name = re.sub(pattern, REPLACEMENT_SIGN, domain)
-    return '{0}{1}'.format(name, EXTENSION)
+    url = re.sub(re.compile(r'(^\W+)|(\W+$)'), '', url)
+    parsed_url = urlparse(unquote(url))
+    domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path)
+    url, extension = os.path.splitext(domain)
+    name = re.sub(pattern, REPLACEMENT_SIGN, url)
+    if any((extension == EXTENSION, extension == '')):
+        return '{0}{1}'.format(name, '.html')
+    return '{0}{1}'.format(name, extension)
 
 
 def scrape(url: str) -> Union[str, bytes]:
@@ -59,33 +49,61 @@ def scrape(url: str) -> Union[str, bytes]:
     return response.content
 
 
-def download(url: str, directory: str) -> None:  # noqa: WPS210
-    """Download and save."""
-    base_document = scrape(url)
-    base_name = get_name_from_url(url)
-    path_to_save = os.path.join(directory, base_name)
+# def download(url: str, directory: str) -> None:  # noqa: WPS210
+#     """Download and save."""
+#     base_document = scrape(url)
+#     base_name = get_name_from_url(url)
+#     path_to_save = os.path.join(directory, base_name)
 
-    if base_name.endswith('.html'):
-        base_directory = path_to_save.replace('.html', '_files')
-        if not os.path.exists(base_directory):
-            os.mkdir(base_directory)
+#     if base_name.endswith('.html'):
+#         base_directory = path_to_save.replace('.html', '_files')
+#         if not os.path.exists(base_directory):
+#             os.mkdir(base_directory)
+#     soup = BeautifulSoup(base_document, 'lxml')
+#     tags = soup.find_all(re.compile(r'(link)|(script)|(img)'))
 
-    soup = BeautifulSoup(base_document, 'lxml')
-    img = soup.find('img')
-    url_img = img.get('src')
-    _, base_directory = os.path.split(base_directory)
-    local_url = os.path.join(
-        base_directory,
-        get_name_for_local_resource(url_img),
-    )
-    img['src'] = local_url
+#     for tag in tags:
+#         src = tag.get('src')
+#         href = tag.get('href')
+#         _, base_directory = os.path.split(base_directory)
+#         if src:
+#             local_url = os.path.join(base_directory, get_name_for_local_resource(src))
+#             tag['src'] = local_url
+#         if href:
+#             local_url = os.path.join(base_directory, get_name_for_local_resource(href))
+#             tag['href'] = local_url
+#     print(soup)
+    # img = soup.find('img')
+    # url_img = img.get('src')
+    # _, base_directory = os.path.split(base_directory)
+    # local_url = os.path.join(
+    #     base_directory,
+    #     get_name_for_local_resource(url_img),
+    # )
+    # print(local_url)
+    # img['src'] = local_url
 
-    with open(path_to_save, 'w') as form:
-        form.write(soup.prettify(formatter='html5'))
+    # with open(path_to_save, 'w') as form:
+    #     form.write(soup.prettify(formatter='html5'))
 
-    new_url = urljoin(url, url_img)
-    image = scrape(new_url)
-    path_to_save = os.path.join(directory, local_url)
-    if isinstance(image, bytes):
-        with open(path_to_save, 'wb') as f_img:
-            f_img.write(image)
+    # new_url = urljoin(url, url_img)
+    # image = scrape(new_url)
+    # path_to_save = os.path.join(directory, local_url)
+    # if isinstance(image, bytes):
+    #     with open(path_to_save, 'wb') as f_img:
+    #         f_img.write(image)
+
+
+
+if __name__ == "__main__":
+    from pprint import pprint
+#     with open('tests/fixture/site/index.html') as html:
+#         FORMS = html.read()
+#     BASE_URL = 'https://ru.hexlet.io/courses'
+#     with requests_mock.Mocker() as m:
+#         m.get(BASE_URL, text=FORMS)
+#         download(BASE_URL, 'abc')
+    with open('tests/fixture/actual_base_urls') as f_urls:
+        urls = f_urls.readlines()
+    new_urls = list(map(get_name_from_url, urls))
+    pprint(new_urls)
