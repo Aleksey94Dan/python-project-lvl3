@@ -7,21 +7,26 @@ import os
 import re
 from typing import Union
 from urllib.parse import unquote, urljoin, urlparse
-import requests_mock
 
 import requests
+import requests_mock
 from bs4 import BeautifulSoup, SoupStrainer
 
-ATRIBUTES = ('scheme', 'netloc')
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
 LIMITER_LENGTH_URL = 2000
+PATTERN_FOR_STRIP = re.compile(r'(^\W+)|(\W+$)')
+PATTERN_FOR_REPLACE = re.compile(r'\b(\W|_)+')
 
 
-def get_name_from_url(url: str) -> str:
-    """Return the transformed name by pattern for base url."""
+def raise_url(url: str) -> None:
     if not url:
         raise ValueError('Missing URL!')
+
+    if not isinstance(url, str):
+        raise TypeError(
+            "Incorrectly entered URL! Expected 'str'.",
+        )
 
     if len(url) > LIMITER_LENGTH_URL:
         raise ValueError(
@@ -29,12 +34,18 @@ def get_name_from_url(url: str) -> str:
                 LIMITER_LENGTH_URL,
             ),
         )
-    pattern = re.compile(r'\b(\W|_)+')
-    url = re.sub(re.compile(r'(^\W+)|(\W+$)'), '', url)
+
+
+def get_name_from_url(url: str) -> str:
+    """Return the transformed name by pattern for base url."""
+
+    raise_url(url)
+
+    url = re.sub(PATTERN_FOR_STRIP, '', url)
     parsed_url = urlparse(unquote(url))
     domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path)
     url, extension = os.path.splitext(domain)
-    name = re.sub(pattern, REPLACEMENT_SIGN, url)
+    name = re.sub(PATTERN_FOR_REPLACE, REPLACEMENT_SIGN, url)
     if any((extension == EXTENSION, extension == '')):
         return '{0}{1}'.format(name, '.html')
     return '{0}{1}'.format(name, extension)
@@ -102,8 +113,9 @@ if __name__ == "__main__":
 #     BASE_URL = 'https://ru.hexlet.io/courses'
 #     with requests_mock.Mocker() as m:
 #         m.get(BASE_URL, text=FORMS)
-#         download(BASE_URL, 'abc')
-    with open('tests/fixture/actual_base_urls') as f_urls:
-        urls = f_urls.readlines()
-    new_urls = list(map(get_name_from_url, urls))
-    pprint(new_urls)
+# #         download(BASE_URL, 'abc')
+#     with open('tests/fixture/actual_base_urls') as f_urls:
+#         urls = f_urls.readlines()
+#     new_urls = list(map(get_name_from_url, urls))
+    # pprint(new_urls)
+    print(get_name_from_url('asdfkljasdkf'))
