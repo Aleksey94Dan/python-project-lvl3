@@ -5,7 +5,7 @@
 import os
 import re
 from tempfile import TemporaryDirectory
-
+from bs4 import BeautifulSoup
 import pytest
 
 from page_loader import loader
@@ -68,7 +68,7 @@ def test_write_data():
     with TemporaryDirectory() as tmpdirname:
         name = 'image.png'
         path_to_file = os.path.join(tmpdirname, name)
-        loader.write_data(CONTENT, path_to_file, 'wb')
+        loader.write_data(CONTENT, path_to_file)
         with open(path_to_file, 'rb') as f:  # noqa: WPS111
             actual_content = f.read()
         assert CONTENT == actual_content
@@ -80,13 +80,15 @@ def test_download(requests_mock) -> None:
     with TemporaryDirectory() as tmpdirname:
         base_name = loader.get_name_from_url(BASE_URL)
         path_to_base_file = os.path.join(tmpdirname, base_name)
-        path_to_base_directory = path_to_base_file.replace('.html', '_files')
+        path_to_base_directory = os.path.join(tmpdirname, path_to_base_file.replace('.html', '_files'))
         requests_mock.get(BASE_URL, text=FORMS)
         requests_mock.get(CONTENT_URL, content=CONTENT)
         loader.download(BASE_URL, directory=tmpdirname)
 
         with open(path_to_base_file) as f:  # noqa: WPS111
             actual_html = f.read()
-        assert actual_html == EXPECTED_FORMS
+        soup = BeautifulSoup(EXPECTED_FORMS, 'lxml')
+        expected_html = soup.prettify(formatter='html5')
+        assert actual_html == expected_html
         assert os.path.isfile(path_to_base_file)
-        assert os.path.isdir(path_to_base_directory)
+        assert os.path.exists(path_to_base_directory)

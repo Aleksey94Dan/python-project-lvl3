@@ -9,7 +9,6 @@ from typing import Union
 from urllib.parse import unquote, urljoin, urlparse  # noqa: F401
 
 import requests
-import requests_mock  # noqa: F401
 from bs4 import BeautifulSoup
 
 REPLACEMENT_SIGN = '-'
@@ -48,7 +47,7 @@ def get_name_from_url(url: str) -> str:
     domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path)
     url, extension = os.path.splitext(domain)
     name = re.sub(PATTERN_FOR_REPLACE, REPLACEMENT_SIGN, url)
-    if any((extension == EXTENSION, extension == '')):
+    if any((extension == EXTENSION, extension == '', extension == '.io')):
         return '{0}{1}'.format(name, '.html')
     return '{0}{1}'.format(name, extension)
 
@@ -62,34 +61,49 @@ def scrape(url: str) -> Union[str, bytes]:
     return response.content
 
 
-def write_data(form: Union[str, bytes], path_to_save: str, mode: str='w') -> None:
+def write_data(form: Union[str, bytes], path_to_save: str) -> None:
     """Write data along the specified path."""
+    mode = 'w'
+    if isinstance(form, bytes):
+        mode = 'wb'
     with open(path_to_save, mode) as forms:
         forms.write(form)
+
+
+def get_url_from_src_and_href(tag):
+    href = tag.has_attr('href')
+    src = tag.has_attr('src')
+    if href:
+        return tag.get('href'), 'href'
+    return tag.get('src'), 'src'
 
 
 def download(url: str, directory: str) -> None:  # noqa: WPS210
     """Download and save resource in directory."""
     base_name = get_name_from_url(url)
-    path_to_save = os.path.join(directory, base_name)
+    base_directory = base_name.replace(EXTENSION, '_files')
 
     if base_name.endswith(EXTENSION):
-        base_directory = path_to_save.replace(EXTENSION, '.files')
-        if not os.path.exists(base_directory):
-            os.mkdir(base_directory)
+        local_directory = os.path.join(directory, base_directory)
+        if not os.path.exists(local_directory):
+            os.mkdir(local_directory)
 
     base_document = scrape(url)
     soup = BeautifulSoup(base_document, 'lxml')
     tags = soup.find_all(PATTERN_FOR_TAGS)
 
     for tag in tags:
-        src = tag.get('src')
-        href = tag.get('href')
-        if src:
-            local_url = os.path.join(base_directory, get_name_from_url(src))
-            tag['src'] = local_url
-        if href:
-            local_url = os.path.join(base_directory, get_name_from_url(href))
-            tag['href'] = local_url
+        url_from_tag, attr = get_url_from_src_and_href(tag)
+        local_path = os.path.join(base_directory, get_name_from_url(url_from_tag))
+        tag[attr] = local_path
+        local_url = urljoin(url, url_from_tag)
+        print(local_url)
+        write_data(scrape(local_url), os.path.join(directory, local_path))
 
+    path_to_save = os.path.join(directory, base_name)
     write_data(soup.prettify(formatter='html5'), path_to_save)
+
+
+if __name__ == "__main__":
+    url = 'https://aleksey94dan.github.io/'
+    download(url, 'abc')
