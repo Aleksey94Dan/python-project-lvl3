@@ -1,7 +1,7 @@
 install:
 		@poetry install
 test:
-		poetry run python -m pytest
+		poetry run pytest --cov=gendiff tests/ --cov-report=xml
 lint:
 		poetry run flake8 page_loader tests
 		poetry run mypy page_loader tests

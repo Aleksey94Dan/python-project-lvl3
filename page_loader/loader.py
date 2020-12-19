@@ -70,12 +70,26 @@ def write_data(form: Union[str, bytes], path_to_save: str) -> None:
         forms.write(form)
 
 
-def get_url_from_src_and_href(tag):
-    href = tag.has_attr('href')
-    src = tag.has_attr('src')
-    if href:
+def _get_url_from_src_and_href(tag):
+    if tag.has_attr('href'):
         return tag.get('href'), 'href'
     return tag.get('src'), 'src'
+
+
+def _get_full_url(base_url: str, local_url: str) -> Union[str, None]:
+    base_parsed = urlparse(base_url)
+    local_parsed = urlparse(local_url)
+    raise_url(local_url)
+    if all(  # noqa: WPS337
+        (
+            base_parsed.scheme == local_parsed.scheme,
+            base_parsed.netloc == local_parsed.netloc,
+        ),
+    ):
+        return local_url
+    elif not all((local_parsed.scheme, local_parsed.netloc)):  # noqa: WPS504
+        return local_url
+    return None
 
 
 def download(url: str, directory: str) -> None:  # noqa: WPS210
@@ -93,17 +107,16 @@ def download(url: str, directory: str) -> None:  # noqa: WPS210
     tags = soup.find_all(PATTERN_FOR_TAGS)
 
     for tag in tags:
-        url_from_tag, attr = get_url_from_src_and_href(tag)
-        local_path = os.path.join(base_directory, get_name_from_url(url_from_tag))
-        tag[attr] = local_path
-        local_url = urljoin(url, url_from_tag)
-        print(local_url)
-        write_data(scrape(local_url), os.path.join(directory, local_path))
+        url_from_tag, attr = _get_url_from_src_and_href(tag)
+        url_from_tag = _get_full_url(url, url_from_tag)
+        if url_from_tag:
+            local_url = urljoin(url, url_from_tag)
+            local_path = os.path.join(
+                base_directory,
+                get_name_from_url(local_url),
+            )
+            tag[attr] = local_path
+            write_data(scrape(local_url), os.path.join(directory, local_path))
 
     path_to_save = os.path.join(directory, base_name)
     write_data(soup.prettify(formatter='html5'), path_to_save)
-
-
-if __name__ == "__main__":
-    url = 'https://aleksey94dan.github.io/'
-    download(url, 'abc')
