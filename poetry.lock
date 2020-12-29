@@ -617,7 +617,7 @@ version = "0.5.0"
 werkzeug = ">=0.10"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "YAML parser and emitter for Python"
 name = "pyyaml"
 optional = false
@@ -826,7 +826,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [metadata]
-content-hash = "d1ab68fcdf35189cf385c7538bf05a34ffe7a61353bfebcccc4f38467b60ec1f"
+content-hash = "f15935e1e674b36a1d7cb9fe01441a10b10eb3dd57c82833f57bded4de56e046"
 python-versions = "^3.7"
 
 [metadata.files]
