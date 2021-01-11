@@ -40,10 +40,11 @@ def raise_url(url: str) -> None:
 
 def get_name_from_url(url: str) -> str:
     """Return the transformed name by pattern for base url."""
+    url = unquote(url)
     raise_url(url)
 
     url = re.sub(PATTERN_FOR_STRIP, '', url)
-    parsed_url = urlparse(unquote(url))
+    parsed_url = urlparse(url)
     domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path)
     url, extension = os.path.splitext(domain)
     name = re.sub(PATTERN_FOR_REPLACE, REPLACEMENT_SIGN, url)
@@ -52,13 +53,55 @@ def get_name_from_url(url: str) -> str:
     return '{0}{1}'.format(name, extension)
 
 
-def scrape(url: str) -> Union[str, bytes]:
+def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
     """Pull page content."""
     response = requests.get(url)
-    response.raise_for_status()
-    if response.encoding:
-        return response.text
-    return response.content
+    status_code = response.status_code
+    forms: Union[str, bytes] = ''
+    try:  # noqa: WPS225
+        forms = response.text if response.encoding else response.content
+    except requests.RequestException:
+        raise requests.RequestException(
+            'There was an ambiguous exception that occurred while handling'
+            'your request: {0}. Error code: {1}'.format(url, status_code),
+        )
+    except requests.ConnectionError:
+        raise requests.ConnectionError(
+            'There was an error connecting to URL: {0}.'
+            'Error code: {1}'.format(
+                url,
+                status_code,
+            ),
+        )
+    except requests.HTTPError:
+        raise requests.HTTPError(
+            'A Connection error occurred to URL: {0}. Error code: {1}'.format(
+                url,
+                status_code,
+            ),
+        )
+    except requests.URLRequired:
+        raise requests.URLRequired(
+            'Your {0} is invalid. Error code:{1}'.format(
+                url,
+                status_code,
+            ),
+        )
+    except requests.ConnectTimeout:  # type: ignore
+        raise requests.ConnectTimeout(  # type: ignore
+            'The request timed out while trying to connect to {0}.'
+            'Error code: {1}'.format(url, status_code),
+        )
+    except requests.ReadTimeout:  # type: ignore
+        raise requests.ReadTimeout(  # type: ignore
+            'The {0} did not send any data in the allotted amount of time.'
+            'Error code: {1}'.format(url, status_code),
+        )
+    except requests.Timeout:
+        raise requests.Timeout(
+            'The request timed out. Error code: {0}'.format(status_code),
+        )
+    return forms
 
 
 def write_data(form: Union[str, bytes], path_to_save: str) -> None:
@@ -79,7 +122,6 @@ def _get_url_from_src_and_href(tag):
 def _get_full_url(base_url: str, local_url: str) -> Union[str, None]:
     base_parsed = urlparse(base_url)
     local_parsed = urlparse(local_url)
-    raise_url(local_url)
     if all(  # noqa: WPS337
         (
             base_parsed.scheme == local_parsed.scheme,
