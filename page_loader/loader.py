@@ -11,6 +11,8 @@ from urllib.parse import unquote, urljoin, urlparse  # noqa: F401
 import requests
 from bs4 import BeautifulSoup
 
+from page_loader import logging_app
+
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
 LIMITER_LENGTH_URL = 2000
@@ -18,6 +20,9 @@ LIMITER_LENGTH_URL = 2000
 PATTERN_FOR_STRIP = re.compile(r'(^\W+)|(\W+$)')
 PATTERN_FOR_REPLACE = re.compile(r'\b(\W|_)+')
 PATTERN_FOR_TAGS = re.compile(r'(link)|(script)|(img)')
+
+
+logger = logging_app.logger
 
 
 def raise_url(url: str) -> None:
@@ -41,7 +46,11 @@ def raise_url(url: str) -> None:
 def get_name_from_url(url: str) -> str:
     """Return the transformed name by pattern for base url."""
     url = unquote(url)
-    raise_url(url)
+
+    try:
+        raise_url(url)
+    except Exception as err:
+        logger.exception('This {0} is incorrect. {1}'.format(url, err))
 
     url = re.sub(PATTERN_FOR_STRIP, '', url)
     parsed_url = urlparse(url)
@@ -61,12 +70,12 @@ def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
     try:  # noqa: WPS225
         forms = response.text if response.encoding else response.content
     except requests.RequestException:
-        raise requests.RequestException(
+        logger.exception(
             'There was an ambiguous exception that occurred while handling'
             'your request: {0}. Error code: {1}'.format(url, status_code),
         )
     except requests.ConnectionError:
-        raise requests.ConnectionError(
+        logger.exception(
             'There was an error connecting to URL: {0}.'
             'Error code: {1}'.format(
                 url,
@@ -74,31 +83,31 @@ def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
             ),
         )
     except requests.HTTPError:
-        raise requests.HTTPError(
+        logger.exception(
             'A Connection error occurred to URL: {0}. Error code: {1}'.format(
                 url,
                 status_code,
             ),
         )
     except requests.URLRequired:
-        raise requests.URLRequired(
+        logger.exception(
             'Your {0} is invalid. Error code:{1}'.format(
                 url,
                 status_code,
             ),
         )
     except requests.ConnectTimeout:  # type: ignore
-        raise requests.ConnectTimeout(  # type: ignore
+        logger.exception(
             'The request timed out while trying to connect to {0}.'
             'Error code: {1}'.format(url, status_code),
         )
     except requests.ReadTimeout:  # type: ignore
-        raise requests.ReadTimeout(  # type: ignore
+        logger.exception(
             'The {0} did not send any data in the allotted amount of time.'
             'Error code: {1}'.format(url, status_code),
         )
     except requests.Timeout:
-        raise requests.Timeout(
+        logger.exception(
             'The request timed out. Error code: {0}'.format(status_code),
         )
     return forms
@@ -143,7 +152,12 @@ def download(url: str, directory: str) -> None:  # noqa: WPS210
         local_directory = os.path.join(directory, base_directory)
         if not os.path.exists(local_directory):
             os.mkdir(local_directory)
-
+    logger.debug(
+        'This page {0} downloaded here {1}'.format(
+            url,
+            os.path.abspath(directory),
+        ),
+    )
     base_document = scrape(url)
     soup = BeautifulSoup(base_document, 'lxml')
     tags = soup.find_all(PATTERN_FOR_TAGS)
@@ -156,6 +170,12 @@ def download(url: str, directory: str) -> None:  # noqa: WPS210
             local_path = os.path.join(
                 base_directory,
                 get_name_from_url(local_url),
+            )
+            logger.debug(
+                'These local sources {0} downloaded here {1}'.format(
+                    local_url,
+                    os.path.abspath(local_path),
+                ),
             )
             tag[attr] = local_path
             write_data(scrape(local_url), os.path.join(directory, local_path))

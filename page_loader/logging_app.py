@@ -22,7 +22,4 @@ with open(absolute_path(NAME_OF_CONFIG)) as log_file:
     logging.config.dictConfig(config)
 
 
-def log_setup(name: str):
-    """Declare logger."""
-    logger = logging.getLogger(name)
-    logger.debug('This is a debug message')
+logger = logging.getLogger(__name__)

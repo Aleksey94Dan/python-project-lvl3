@@ -9,7 +9,7 @@ from tempfile import TemporaryDirectory
 import pytest
 from bs4 import BeautifulSoup
 
-from page_loader import loader
+from page_loader import loader, logging_app
 
 BASE_URL = 'https://ru.hexlet.io/courses'
 PNG_URL = 'https://ru.hexlet.io/assets/professions/nodejs.png'
@@ -35,6 +35,8 @@ with open('tests/fixture/site/assets/professions/nodejs.png', MODE) as css:
 
 with open('tests/fixture/site/packs/js/runtime.js', MODE) as js:
     CONTENT_JS = js.read()
+
+logger = logging_app.logger
 
 
 @pytest.mark.parametrize('url', ACTUAL_BASE_URLS)
