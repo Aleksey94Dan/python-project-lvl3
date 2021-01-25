@@ -10,12 +10,14 @@ from urllib.parse import unquote, urljoin, urlparse  # noqa: F401
 
 import requests
 from bs4 import BeautifulSoup
+from progress.bar import Bar
 
 from page_loader import logging_app
 
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
 LIMITER_LENGTH_URL = 2000
+PROCESSING = 'Downloand'
 
 PATTERN_FOR_STRIP = re.compile(r'(^\W+)|(\W+$)')
 PATTERN_FOR_REPLACE = re.compile(r'\b(\W|_)+')
@@ -178,7 +180,13 @@ def download(url: str, directory: str) -> None:  # noqa: WPS210
                 ),
             )
             tag[attr] = local_path
-            write_data(scrape(local_url), os.path.join(directory, local_path))
+           with Bar(PROCESSING, max=10) as bar:
+                for chunk in range(10):
+                    write_data(
+                        scrape(local_url),
+                        os.path.join(directory, local_path),
+                    )
+                    bar.next()
 
     path_to_save = os.path.join(directory, base_name)
     write_data(soup.prettify(formatter='html5'), path_to_save)
