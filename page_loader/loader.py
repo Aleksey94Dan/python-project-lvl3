@@ -2,7 +2,6 @@
 
 """The module transforms the url and loads the html."""
 
-
 import os
 import re
 from typing import Union
@@ -10,7 +9,6 @@ from urllib.parse import unquote, urljoin, urlparse  # noqa: F401
 
 import requests
 from bs4 import BeautifulSoup
-from progress.bar import Bar
 
 from page_loader import logging_app
 
@@ -180,13 +178,9 @@ def download(url: str, directory: str) -> None:  # noqa: WPS210
                 ),
             )
             tag[attr] = local_path
-           with Bar(PROCESSING, max=10) as bar:
-                for chunk in range(10):
-                    write_data(
-                        scrape(local_url),
-                        os.path.join(directory, local_path),
-                    )
-                    bar.next()
-
+            write_data(
+                scrape(local_url),
+                os.path.join(directory, local_path),
+            )
     path_to_save = os.path.join(directory, base_name)
     write_data(soup.prettify(formatter='html5'), path_to_save)
