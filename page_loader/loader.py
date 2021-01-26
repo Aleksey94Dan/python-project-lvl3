@@ -70,12 +70,12 @@ def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
     try:  # noqa: WPS225
         forms = response.text if response.encoding else response.content
     except requests.RequestException:
-        logger.exception(
+        raise requests.RequestException(
             'There was an ambiguous exception that occurred while handling'
             'your request: {0}. Error code: {1}'.format(url, status_code),
         )
     except requests.ConnectionError:
-        logger.exception(
+        raise requests.ConnectionError(
             'There was an error connecting to URL: {0}.'
             'Error code: {1}'.format(
                 url,
@@ -83,31 +83,31 @@ def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
             ),
         )
     except requests.HTTPError:
-        logger.exception(
+        raise requests.HTTPError(
             'A Connection error occurred to URL: {0}. Error code: {1}'.format(
                 url,
                 status_code,
             ),
         )
     except requests.URLRequired:
-        logger.exception(
+        raise requests.URLRequired(
             'Your {0} is invalid. Error code:{1}'.format(
                 url,
                 status_code,
             ),
         )
     except requests.ConnectTimeout:  # type: ignore
-        logger.exception(
+        raise requests.ConnectTimeout(
             'The request timed out while trying to connect to {0}.'
             'Error code: {1}'.format(url, status_code),
         )
     except requests.ReadTimeout:  # type: ignore
-        logger.exception(
+        raise requests.ReadTimeout(
             'The {0} did not send any data in the allotted amount of time.'
             'Error code: {1}'.format(url, status_code),
         )
     except requests.Timeout:
-        logger.exception(
+        raise requests.Timeout(
             'The request timed out. Error code: {0}'.format(status_code),
         )
     return forms

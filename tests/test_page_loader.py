@@ -7,6 +7,8 @@ import re
 from tempfile import TemporaryDirectory
 
 import pytest
+import requests
+import requests_mock
 from bs4 import BeautifulSoup
 
 from page_loader import loader, logging_app
@@ -86,7 +88,7 @@ def test_write_data():
         assert CONTENT == actual_content
 
 
-def test_download(requests_mock):  # noqa: WPS210
+def test_download(requests_mock):  # noqa: WPS210, WPS442
     """Test of load page."""
     with TemporaryDirectory() as tmpdirname:
         base_name = loader.get_name_from_url(BASE_URL)
@@ -107,3 +109,13 @@ def test_download(requests_mock):  # noqa: WPS210
         assert actual_html == expected_html
         assert os.path.isfile(path_to_base_file)
         assert os.path.exists(path_to_base_directory)
+
+
+def test_requests_not_found():
+    """Test for 404 Non found."""
+    adapter = requests_mock.Adapter()
+    adapter.register_uri(
+        'GET', 'mock://test.com/6', exc=requests.exceptions.InvalidSchema,
+    )
+    with pytest.raises(requests.exceptions.InvalidSchema):
+        loader.scrape('mock://test.com/6')
