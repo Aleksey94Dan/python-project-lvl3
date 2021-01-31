@@ -31,9 +31,15 @@ def parse():
         help='The directory where to save files',
     )
     parser.add_argument(
-        'url',
+        '--url',
         type=str,
         help='Enter the correct page address',
     )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Enables verbose mode with logging display',
+    )
     args = parser.parse_args()
-    return args.output, args.url
+    return args.output, args.url, args.verbose

@@ -6,19 +6,30 @@ import os
 import re
 from tempfile import TemporaryDirectory
 
-import pytest
-import requests
-import requests_mock
 from bs4 import BeautifulSoup
+from requests import exceptions
 
+import pytest  # noqa:I001
+import requests_mock  # noqa:I001
 from page_loader import loader, logging_app
+from page_loader.script import page_loader
 
 BASE_URL = 'https://ru.hexlet.io/courses'
 PNG_URL = 'https://ru.hexlet.io/assets/professions/nodejs.png'
 CSS_URL = 'https://ru.hexlet.io/assets/application.css'
 JS_URL = 'https://ru.hexlet.io/packs/js/runtime.js'
 
+
 MODE = 'rb'
+ECXEPTIONS = (
+    exceptions.RequestException,
+    exceptions.HTTPError,
+    exceptions.URLRequired,
+    exceptions.ConnectionError,
+    exceptions.Timeout,
+    exceptions.MissingSchema,
+)
+
 
 with open('tests/fixture/actual_base_urls') as base_urls:
     ACTUAL_BASE_URLS = base_urls.read().strip().splitlines()
@@ -111,11 +122,16 @@ def test_download(requests_mock):  # noqa: WPS210, WPS442
         assert os.path.exists(path_to_base_directory)
 
 
-def test_requests_not_found():
-    """Test for 404 Non found."""
-    adapter = requests_mock.Adapter()
-    adapter.register_uri(
-        'GET', 'mock://test.com/6', exc=requests.exceptions.InvalidSchema,
-    )
-    with pytest.raises(requests.exceptions.InvalidSchema):
-        loader.scrape('mock://test.com/6')
+def test_requests_exception():
+    """Test for exception."""
+    with requests_mock.Mocker() as mock:
+        for exception in ECXEPTIONS:
+            mock.register_uri('GET', BASE_URL, exc=exception)
+            with pytest.raises(exception):
+                loader.scrape(BASE_URL)
+
+
+def test_exit():
+    """Test for system exit."""
+    with pytest.raises(SystemExit):
+        page_loader.main()

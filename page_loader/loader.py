@@ -96,16 +96,6 @@ def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
                 status_code,
             ),
         )
-    except requests.ConnectTimeout:  # type: ignore
-        raise requests.ConnectTimeout(
-            'The request timed out while trying to connect to {0}.'
-            'Error code: {1}'.format(url, status_code),
-        )
-    except requests.ReadTimeout:  # type: ignore
-        raise requests.ReadTimeout(
-            'The {0} did not send any data in the allotted amount of time.'
-            'Error code: {1}'.format(url, status_code),
-        )
     except requests.Timeout:
         raise requests.Timeout(
             'The request timed out. Error code: {0}'.format(status_code),
