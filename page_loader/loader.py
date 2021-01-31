@@ -2,6 +2,7 @@
 
 """The module transforms the url and loads the html."""
 
+import logging
 import os
 import re
 from typing import Union
@@ -9,8 +10,7 @@ from urllib.parse import unquote, urljoin, urlparse  # noqa: F401
 
 import requests
 from bs4 import BeautifulSoup
-
-from page_loader import logging_app
+from progress.bar import Bar
 
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
@@ -20,9 +20,9 @@ PROCESSING = 'Downloand'
 PATTERN_FOR_STRIP = re.compile(r'(^\W+)|(\W+$)')
 PATTERN_FOR_REPLACE = re.compile(r'\b(\W|_)+')
 PATTERN_FOR_TAGS = re.compile(r'(link)|(script)|(img)')
+CHUNK = 10
 
-
-logger = logging_app.logger
+logger = logging.getLogger(__name__)
 
 
 def raise_url(url: str) -> None:
@@ -64,7 +64,10 @@ def get_name_from_url(url: str) -> str:
 
 def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
     """Pull page content."""
-    response = requests.get(url)
+    with Bar(PROCESSING, max=CHUNK) as progress:
+        for _ in range(CHUNK):  # noqa: WPS122
+            response = requests.get(url)
+            progress.next()  # noqa: B305
     status_code = response.status_code
     forms: Union[str, bytes] = ''
     try:  # noqa: WPS225
