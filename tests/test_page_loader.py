@@ -2,6 +2,7 @@
 
 """Testing all modules page-loader."""
 
+import logging
 import os
 import re
 from tempfile import TemporaryDirectory
@@ -11,7 +12,7 @@ from requests import exceptions
 
 import pytest  # noqa:I001
 import requests_mock  # noqa:I001
-from page_loader import loader, logging_app
+from page_loader import loader
 from page_loader.script import page_loader
 
 BASE_URL = 'https://ru.hexlet.io/courses'
@@ -49,7 +50,7 @@ with open('tests/fixture/site/assets/professions/nodejs.png', MODE) as css:
 with open('tests/fixture/site/packs/js/runtime.js', MODE) as js:
     CONTENT_JS = js.read()
 
-logger = logging_app.logger
+logger = logging.getLogger(__name__)
 
 
 @pytest.mark.parametrize('url', ACTUAL_BASE_URLS)
