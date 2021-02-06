@@ -7,6 +7,9 @@ lint:
 		poetry run mypy page_loader tests
 build:
 		poetry build
+publish:
+		poetry publish -r test
+
 package-install:
 		pip install --user dist/*.whl
 check:
