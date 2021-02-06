@@ -31,6 +31,7 @@ def parse():
         help='The directory where to save files',
     )
     parser.add_argument(
+        '-u',
         '--url',
         type=str,
         help='Enter the correct page address',
