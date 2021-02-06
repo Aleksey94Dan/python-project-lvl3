@@ -15,7 +15,6 @@ from progress.bar import Bar
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
 LIMITER_LENGTH_URL = 2000
-PROCESSING = 'Downloand'
 
 PATTERN_FOR_STRIP = re.compile(r'(^\W+)|(\W+$)')
 PATTERN_FOR_REPLACE = re.compile(r'\b(\W|_)+')
@@ -25,7 +24,7 @@ CHUNK = 10
 logger = logging.getLogger(__name__)
 
 
-def raise_url(url: str) -> None:
+def check_url(url: str) -> str:
     """Raise exceptions caused by URL errors."""
     if not url:
         raise ValueError('Missing URL!')
@@ -41,6 +40,7 @@ def raise_url(url: str) -> None:
                 LIMITER_LENGTH_URL,
             ),
         )
+    return url
 
 
 def get_name_from_url(url: str) -> str:
@@ -48,7 +48,7 @@ def get_name_from_url(url: str) -> str:
     url = unquote(url)
 
     try:
-        raise_url(url)
+        url = check_url(url)
     except Exception as err:
         logger.exception('This {0} is incorrect. {1}'.format(url, err))
 
@@ -64,7 +64,7 @@ def get_name_from_url(url: str) -> str:
 
 def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
     """Pull page content."""
-    with Bar(PROCESSING, max=CHUNK) as progress:
+    with Bar(url, max=CHUNK) as progress:
         for _ in range(CHUNK):  # noqa: WPS122
             response = requests.get(url)
             progress.next()  # noqa: B305

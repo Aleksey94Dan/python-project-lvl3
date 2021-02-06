@@ -74,10 +74,10 @@ def test_get_name_from_url(url):
         ),
     ],
 )
-def test_raise_url(url, message, type_of_raise):
+def test_check_url(url, message, type_of_raise):
     """Test exception transformed name by pattern."""
     with pytest.raises(type_of_raise, match=message):
-        loader.raise_url(url)
+        loader.check_url(url)
 
 
 def test_scrape_text(requests_mock):  # noqa: WPS442
