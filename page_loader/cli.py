@@ -24,15 +24,14 @@ def parse():
         ),
     )
     parser.add_argument(
-        '-O',
+        '-o',
         '--output',
         type=dir_path,
         default=os.getcwd(),
         help='The directory where to save files',
     )
     parser.add_argument(
-        '-u',
-        '--url',
+        'url',
         type=str,
         help='Enter the correct page address',
     )
