@@ -10,7 +10,6 @@ from urllib.parse import unquote, urljoin, urlparse  # noqa: F401
 
 import requests
 from bs4 import BeautifulSoup
-from progress.bar import Bar
 
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
@@ -174,8 +173,3 @@ def download(url: str, directory: str) -> None:  # noqa: WPS210
             )
     path_to_save = os.path.join(directory, base_name)
     write_data(soup.prettify(formatter='html5'), path_to_save)
-
-
-if __name__ == '__main__':
-    url = 'http://www6.badsite.com/?template=simple2c&tdfs=1&s_token=1612671042.0041451319&uuid=1612671042.0041451319&term=Moscow%20Regional%20Web%20Hosting%20Servers&term=North%20American%20Regional%20Web%20Hosting%20Servers&term=Asian%20Regional%20Web%20Hosting%20Servers&term=European%20Regional%20Web%20Hosting%20Servers&backfill=0'
-    download(url, 'abc')
