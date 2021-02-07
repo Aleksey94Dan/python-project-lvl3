@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 REPLACEMENT_SIGN = '-'
 EXTENSION = '.html'
 LIMITER_LENGTH_URL = 2000
+ADAPTERS = ('http', 'https', '')
 
 PATTERN_FOR_STRIP = re.compile(r'(^\W+)|(\W+$)')
 PATTERN_FOR_REPLACE = re.compile(r'\b(\W|_)+')
@@ -132,6 +133,14 @@ def _get_full_url(base_url: str, local_url: str) -> Union[str, None]:
     return None
 
 
+def _check_adapter(local_url):
+    local_parse = urlparse(local_url)
+    local_adapter = local_parse.scheme
+    if any(map(lambda adapter: adapter == local_adapter, ADAPTERS)):
+        return local_url
+    return None
+
+
 def download(url: str, directory: str) -> None:  # noqa: WPS210
     """Download and save resource in directory."""
     base_name = get_name_from_url(url)
@@ -153,7 +162,7 @@ def download(url: str, directory: str) -> None:  # noqa: WPS210
 
     for tag in tags:
         url_from_tag, attr = _get_url_from_src_and_href(tag)
-        url_from_tag = _get_full_url(url, url_from_tag)
+        url_from_tag = _check_adapter(_get_full_url(url, url_from_tag))
         if url_from_tag:
             local_url = urljoin(url, url_from_tag)
             local_path = os.path.join(
