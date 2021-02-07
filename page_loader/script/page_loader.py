@@ -14,9 +14,10 @@ from page_loader import cli, loader
 START = 'Start'
 FINISH = 'The program ended successfully'
 SYSTEM_EXIT_ABORT = 1
+SYSTEM_EXIT_GOOD = 0
 
 
-def main() -> None:
+def main() -> None:  # noqa: WPS210
     """Run a code."""
     path_to_file, url, verbose = cli.parse()
     logger_level = logging.DEBUG if verbose else logging.INFO
@@ -26,6 +27,7 @@ def main() -> None:
     )
     logger = logging.getLogger(__name__)
     logger.info(START)
+    exit_code = SYSTEM_EXIT_GOOD
     try:
         loader.download(url, path_to_file)
     except (TypeError, exceptions.MissingSchema, exceptions.InvalidSchema):
@@ -35,7 +37,8 @@ def main() -> None:
             ),
             ),
         )
-        sys.exit(SYSTEM_EXIT_ABORT)
+        exit_code = SYSTEM_EXIT_ABORT
+    sys.exit(exit_code)
     logger.info(FINISH)
 
 
