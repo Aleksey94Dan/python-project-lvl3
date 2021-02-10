@@ -1,20 +1,23 @@
 # -*- coding:utf-8 -*-
 
 """Extraction of urls and directories from the command line."""
+
 import argparse
 import os
 
+from page_loader import logging
 
-def dir_path(path):
+
+def dir_path(path: str) -> str:
     """Check if the specified directory exists."""
-    if os.path.isdir(path):
-        return path
-    raise argparse.ArgumentTypeError(
-        '{0} is not valid path'.format(path),
-    )
+    if not os.path.isdir(path):
+        raise argparse.ArgumentTypeError(
+            '{0} is not valid path'.format(path),
+        )
+    return path
 
 
-def parse():
+def get_parser() -> argparse.ArgumentParser:
     """Parser command line arguments."""
     parser = argparse.ArgumentParser(
         prog='page-loader',
@@ -24,6 +27,12 @@ def parse():
         ),
     )
     parser.add_argument(
+        '-u',
+        '--url',
+        type=str,
+        help='Enter the correct page address',
+    )
+    parser.add_argument(
         '-o',
         '--output',
         type=dir_path,
@@ -31,15 +40,17 @@ def parse():
         help='The directory where to save files',
     )
     parser.add_argument(
-        'url',
-        type=str,
-        help='Enter the correct page address',
-    )
-    parser.add_argument(
         '-v',
-        '--verbose',
-        action='store_true',
+        '--verbosity',
+        action='store',
+        default=logging.NONE,
+        type=str,
         help='Enables verbose mode with logging display',
+        choices=[
+            logging.NONE,
+            logging.INFO,
+            logging.DEBUG,
+            logging.ERROR,
+        ],
     )
-    args = parser.parse_args()
-    return args.output, args.url, args.verbose
+    return parser
