@@ -2,105 +2,12 @@
 
 """The module transforms the url and loads the html."""
 
-import logging
 import os
 import re
 from typing import Union
-from urllib.parse import unquote, urljoin, urlparse  # noqa: F401
 
 import requests
 from bs4 import BeautifulSoup
-
-REPLACEMENT_SIGN = '-'
-EXTENSION = '.html'
-LIMITER_LENGTH_URL = 2000
-ADAPTERS = ('http', 'https', '')
-
-PATTERN_FOR_STRIP = re.compile(r'(^\W+)|(\W+$)')
-PATTERN_FOR_REPLACE = re.compile(r'\b(\W|_)+')
-PATTERN_FOR_TAGS = re.compile(r'(link)|(script)|(img)')
-CHUNK = 10
-
-logger = logging.getLogger(__name__)
-
-
-def check_url(url: str) -> str:
-    """Raise exceptions caused by URL errors."""
-    if not url:
-        raise ValueError('Missing URL!')
-
-    if not isinstance(url, str):
-        raise TypeError(
-            "Incorrectly entered URL! Expected 'str'.",
-        )
-
-    if len(url) > LIMITER_LENGTH_URL:
-        raise ValueError(
-            'Your URL has passed the actual limit of {0} characters.'.format(
-                LIMITER_LENGTH_URL,
-            ),
-        )
-    return url
-
-
-def get_name_from_url(url: str) -> str:
-    """Return the transformed name by pattern for base url."""
-    url = unquote(url)
-
-    try:
-        url = check_url(url)
-    except Exception as err:
-        logger.exception('This {0} is incorrect. {1}'.format(url, err))
-
-    url = re.sub(PATTERN_FOR_STRIP, '', url)
-    parsed_url = urlparse(url)
-    domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path)
-    url, extension = os.path.splitext(domain)
-    name = re.sub(PATTERN_FOR_REPLACE, REPLACEMENT_SIGN, url)
-    if any((extension == EXTENSION, extension == '', extension == '.io')):
-        return '{0}{1}'.format(name, '.html')
-    return '{0}{1}'.format(name, extension)
-
-
-def scrape(url: str) -> Union[str, bytes]:   # noqa: WPS231, C901
-    """Pull page content."""
-    response = requests.get(url)
-    status_code = response.status_code
-    forms: Union[str, bytes] = ''
-    try:  # noqa: WPS225
-        forms = response.text if response.encoding else response.content
-    except requests.RequestException:
-        raise requests.RequestException(
-            'There was an ambiguous exception that occurred while handling'
-            'your request: {0}. Error code: {1}'.format(url, status_code),
-        )
-    except requests.ConnectionError:
-        raise requests.ConnectionError(
-            'There was an error connecting to URL: {0}.'
-            'Error code: {1}'.format(
-                url,
-                status_code,
-            ),
-        )
-    except requests.HTTPError:
-        raise requests.HTTPError(
-            'A Connection error occurred to URL: {0}. Error code: {1}'.format(
-                url,
-                status_code,
-            ),
-        )
-    except requests.URLRequired:
-        raise requests.URLRequired(
-            'Your {0} is invalid. Error code:{1}'.format(
-                url,
-                status_code,
-            ),
-        )
-    except requests.Timeout:
-        raise requests.Timeout(
-            'The request timed out. Error code: {0}'.format(status_code),
-        )
-    return forms
 
 
 def write_data(form: Union[str, bytes], path_to_save: str) -> None:
@@ -118,27 +25,6 @@ def _get_url_from_src_and_href(tag):
     return tag.get('src'), 'src'
 
 
-def _get_full_url(base_url: str, local_url: str) -> Union[str, None]:
-    base_parsed = urlparse(base_url)
-    local_parsed = urlparse(local_url)
-    if all(  # noqa: WPS337
-        (
-            base_parsed.scheme == local_parsed.scheme,
-            base_parsed.netloc == local_parsed.netloc,
-        ),
-    ):
-        return local_url
-    elif not all((local_parsed.scheme, local_parsed.netloc)):  # noqa: WPS504
-        return local_url
-    return None
-
-
-def _check_adapter(local_url):
-    local_parse = urlparse(local_url)
-    local_adapter = local_parse.scheme
-    if any(map(lambda adapter: adapter == local_adapter, ADAPTERS)):
-        return local_url
-    return None
 
 
 def download(url: str, directory: str) -> None:  # noqa: WPS210
@@ -181,4 +67,3 @@ def download(url: str, directory: str) -> None:  # noqa: WPS210
                 os.path.join(directory, local_path),
             )
     path_to_save = os.path.join(directory, base_name)
-    write_data(soup.prettify(formatter='html5'), path_to_save)

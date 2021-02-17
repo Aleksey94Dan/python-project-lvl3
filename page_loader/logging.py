@@ -1,21 +1,20 @@
 # -*- coding:utf-8 -*-
 
+"""Basic logging setup."""
+
 import logging
 from typing import Optional
 
-LOG_LEVEL = (
-    NONE,
-    DEBUG,
-    INFO,
-    ERROR,
-) = 'none', 'debug', 'info', 'error'
+NONE = 'none'
+DEBUG = 'debug'
+INFO = 'info'
+ERROR = 'error'
 
 
 def setup(level: Optional[str]):
     """Configure a basic logger."""
-    if level == NONE:
-        log_level = None
-    elif level == INFO:
+    log_level = None
+    if level == INFO:
         log_level = logging.INFO
     elif level == DEBUG:
         log_level = logging.DEBUG
