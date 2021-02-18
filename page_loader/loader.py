@@ -3,67 +3,54 @@
 """The module transforms the url and loads the html."""
 
 import os
-import re
+
 from typing import Union
+from pathlib import Path
+from page_loader import url as my_url
+from page_loader import scrape
+from page_loader import parsing
+from functools import partial
+from pprint import pprint
 
-import requests
-from bs4 import BeautifulSoup
+def compose(g, f):
+    def h(x):
+        return g(f(x))
+    return h
 
 
-def write_data(form: Union[str, bytes], path_to_save: str) -> None:
+def store(path_to_save: Path, content: Union[str, bytes]) -> None:
     """Write data along the specified path."""
-    mode = 'w'
-    if isinstance(form, bytes):
-        mode = 'wb'
-    with open(path_to_save, mode) as forms:
-        forms.write(form)
+    with open(path_to_save, 'wb' if isinstance(content, bytes) else 'w') as out:
+        out.write(content)
 
 
-def _get_url_from_src_and_href(tag):
-    if tag.has_attr('href'):
-        return tag.get('href'), 'href'
-    return tag.get('src'), 'src'
-
-
-
-
-def download(url: str, directory: str) -> None:  # noqa: WPS210
+def download(url: str, path_to_save: str) -> None:  # noqa: WPS210
     """Download and save resource in directory."""
-    base_name = get_name_from_url(url)
-    base_directory = base_name.replace(EXTENSION, '_files')
 
-    if base_name.endswith(EXTENSION):
-        local_directory = os.path.join(directory, base_directory)
-        if not os.path.exists(local_directory):
-            os.mkdir(local_directory)
-    logger.debug(
-        'This page {0} downloaded here {1}'.format(
-            url,
-            os.path.abspath(directory),
-        ),
-    )
-    base_document = scrape(url)
-    soup = BeautifulSoup(base_document, 'lxml')
-    tags = soup.find_all(PATTERN_FOR_TAGS)
+    base_name = my_url.to_name(url)
+    base_directory = my_url.to_name(url, directory=True)
+    path_to_save_doc = os.path.join(path_to_save, base_name)
+    path_to_save_loc = partial(os.path.join, path_to_save, base_directory)
+    full_loc_url = partial(my_url.to_full_url, url)
+    for_changed_url = compose(partial(os.path.join, base_directory), my_url.to_name)
+    if not os.path.exists(path_to_save_loc()):
+        os.mkdir(path_to_save_loc())
 
-    for tag in tags:
-        url_from_tag, attr = _get_url_from_src_and_href(tag)
-        url_from_tag = _check_adapter(_get_full_url(url, url_from_tag))
-        if url_from_tag:
-            local_url = urljoin(url, url_from_tag)
-            local_path = os.path.join(
-                base_directory,
-                get_name_from_url(local_url),
-            )
-            logger.debug(
-                'These local sources {0} downloaded here {1}'.format(
-                    local_url,
-                    os.path.abspath(local_path),
-                ),
-            )
-            tag[attr] = local_path
-            write_data(
-                scrape(local_url),
-                os.path.join(directory, local_path),
-            )
-    path_to_save = os.path.join(directory, base_name)
+    base_document = scrape.get_content(url)
+    prepared_html = parsing.prepare_html(base_document)
+    tags = parsing.find_tags(prepared_html)
+    urls = parsing.get_urls(tags)
+    for i in range(len(urls)):
+        url = full_loc_url(urls[i])
+        tags[i].append(url)
+    tags = filter(lambda tag: tag[2] is not None, tags)
+    urls = [tag[2] for tag in tags]
+    base_document = parsing.modify(prepared_html, tags, for_changed_url)
+    store(path_to_save_doc, base_document)
+    for url in urls:
+        local_doc = scrape.get_content(url)
+        local_name = for_changed_url(url)
+        print(local_name)
+
+
+# download('https://ru.hexlet.io/programs', '/home/aleksey/python-project-lvl3/abc')

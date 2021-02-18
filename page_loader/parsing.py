@@ -40,10 +40,11 @@ def find_tags(
 
 def modify(
     soup: bs4.BeautifulSoup,
-    tags: List[List],
+    tags,
+    function,
 ) -> str:
     """Change the content of a tag."""
     if tags:
         for tag, attr, changed_url in tags:
-            tag[attr] = changed_url
+            tag[attr] = function(changed_url)
     return soup.prettify(encoding=UTF, formatter=FORMATTER)
