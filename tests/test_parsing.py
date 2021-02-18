@@ -18,8 +18,8 @@ def test_get_urls(html, expected_urls):
     assert expected_urls == actually_urls
 
 
-def test_change_urls(html, expected_urls):
+def test_modify(html, expected_html, changed_urls):
     """Test change urls."""
     prepared_html = parsing.prepare_html(html)
 
-    assert expected_urls == parsing.change_urls(prepared_html)
+    assert expected_urls == parsing.modify(prepared_html, changed_urls)
