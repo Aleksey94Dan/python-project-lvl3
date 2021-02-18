@@ -21,7 +21,7 @@ def prepare_html(html: str) -> bs4.BeautifulSoup:
     return BeautifulSoup(html, PARSER)
 
 
-def get_urls(tags: List[Tuple[bs4.element.Tag, str]]) -> str:
+def get_urls(tags: List[List]) -> str:
     """Get return urls."""
     if tags:
         return [tag.get(attr) for tag, attr in tags]
@@ -30,9 +30,20 @@ def get_urls(tags: List[Tuple[bs4.element.Tag, str]]) -> str:
 def find_tags(
     soup: bs4.BeautifulSoup,
     pattern: re.Pattern = PATTERN_FOR_TAGS,
-) -> List[Tuple[bs4.element.Tag, str]]:
+) -> List[List]:
     """Find specified tags of pattern."""
     tags = soup.find_all(pattern)
     return [
-        (tag, HREF) if tag.has_attr(HREF) else (tag, SRC) for tag in tags
+        [tag, HREF] if tag.has_attr(HREF) else [tag, SRC] for tag in tags
     ]
+
+
+def modify(
+    soup: bs4.BeautifulSoup,
+    tags: List[List],
+) -> str:
+    """Change the content of a tag."""
+    if tags:
+        for tag, attr, changed_url in tags:
+            tag[attr] = changed_url
+    return soup.prettify(encoding=UTF, formatter=FORMATTER)
