@@ -14,6 +14,7 @@ JS_URL = 'https://ru.hexlet.io/packs/js/runtime.js'
 
 BASE_HTML = 'tests/fixture/site/index.html'
 EXPECTED_HTML = 'tests/fixture/site/expected/expected.html'
+EXPECTED_FOR_CHANGED = 'tests/fixture/site/expected/expected_for_changed.html'
 PNG = 'tests/fixture/site/assets/professions/nodejs.png'
 CSS = 'tests/fixture/site/assets/application.css'
 JS = 'tests/fixture/site/packs/js/runtime.js'
@@ -34,6 +35,12 @@ def html():
 def expected_html():
     """Return expected html file."""
     return _get_file(EXPECTED_HTML)
+
+
+@pytest.fixture()
+def expected_for_changed():
+    """Return expected html file."""
+    return _get_file(EXPECTED_FOR_CHANGED)
 
 
 @pytest.fixture()
@@ -68,12 +75,8 @@ def expected_urls():
 
 
 @pytest.fixture()
-def changed_urls():
-    """Return attributes along with changed url."""
-    return [
-        'ru-hexlet-io-courses_files/ru-hexlet-io-assets-application.css',
-        'ru-hexlet-io-courses_files/ru-hexlet-io-courses.html',
-        'ru-hexlet-io-courses_files/ru-hexlet-io-assets-professions'
-        '-nodejs.png',
-        'ru-hexlet-io-courses_files/ru-hexlet-io-packs-js-runtime.js',
-    ]
+def changed_function():
+    """Change data."""
+    def wrapper(args: str):  # noqa: WPS430
+        return args.upper()
+    return wrapper
