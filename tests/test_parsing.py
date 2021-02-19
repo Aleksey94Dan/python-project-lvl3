@@ -22,6 +22,9 @@ def test_modify(html, expected_for_changed, changed_function):
     """Test modify html."""
     prepared_html = parsing.prepare_html(html)
     tags = parsing.find_tags(prepared_html)
+    urls = parsing.get_urls(tags)
+    for i, tag in enumerate(tags):
+        tag.append(urls[i])
     actully_html = parsing.modify(prepared_html, tags, changed_function)
 
     assert expected_for_changed == actully_html
