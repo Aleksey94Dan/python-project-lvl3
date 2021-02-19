@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Union
 
 import pytest
+from bs4 import BeautifulSoup
 
 BASE_URL = 'https://ru.hexlet.io/courses'
 PNG_URL = 'https://ru.hexlet.io/assets/professions/nodejs.png'
@@ -34,13 +35,15 @@ def html():
 @pytest.fixture()
 def expected_html():
     """Return expected html file."""
-    return _get_file(EXPECTED_HTML)
+    ex_html = BeautifulSoup(_get_file(EXPECTED_HTML), 'lxml')
+    return ex_html.prettify(formatter='html5')
 
 
 @pytest.fixture()
 def expected_for_changed():
     """Return expected html file."""
-    return _get_file(EXPECTED_FOR_CHANGED)
+    html_for = BeautifulSoup(_get_file(EXPECTED_FOR_CHANGED), 'lxml')
+    return html_for.prettify(formatter='html5')
 
 
 @pytest.fixture()
@@ -71,6 +74,17 @@ def expected_urls():
         '/assets/professions/nodejs.png',
         'https://js.stripe.com/v3/',
         'https://ru.hexlet.io/packs/js/runtime.js',
+    ]
+
+
+@pytest.fixture()
+def expected_file_name():
+    """Return name of local resource."""
+    return [
+        'ru-hexlet-io-courses.html',
+        'ru-hexlet-io-assets-professions-nodejs.png',
+        'ru-hexlet-io-assets-application.css',
+        'ru-hexlet-io-packs-js-runtime.js',
     ]
 
 

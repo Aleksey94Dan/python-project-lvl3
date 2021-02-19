@@ -7,8 +7,7 @@
 import logging
 import sys
 
-from page_loader import cli
-from page_loader import loader
+from page_loader import cli, loader
 from page_loader import logging as my_logging
 
 ABORT_CODE = 1

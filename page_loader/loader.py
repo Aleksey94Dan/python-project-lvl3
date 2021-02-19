@@ -23,19 +23,24 @@ def store(path_to_save: Path, data: Union[str, bytes]) -> None:  # noqa; WPS110
         out.write(data)
 
 
-def download(url: str, path_to_save: str) -> None:
+def make_directory(path_to_save: Path) -> None:
+    """Create a directory."""
+    if not os.path.exists(path_to_save):
+        os.mkdir(path_to_save)
+
+
+def download(url: str, path_to_save: str) -> None:  # noqa: WPS210
     """Download and save resource in directory."""
     base_name = my_url.to_name(url)
     base_directory = my_url.to_name(url, directory=True)
-    path_to_save_doc = os.path.join(path_to_save, base_name)
-    path_to_save_loc = partial(os.path.join, path_to_save, base_directory)
+    path_to_save = partial(os.path.join, path_to_save)
     full_loc_url = partial(my_url.to_full_url, url)
     for_changed_url = _compose(
         partial(os.path.join, base_directory),
         my_url.to_name,
     )
-    if not os.path.exists(path_to_save_loc()):
-        os.mkdir(path_to_save_loc())
+
+    make_directory(path_to_save(base_directory))
 
     base_document = scrape.get_content(url)
     prepared_html = parsing.prepare_html(base_document)
@@ -44,11 +49,12 @@ def download(url: str, path_to_save: str) -> None:
     for index, url in enumerate(urls):
         url = full_loc_url(url)
         tags[index].append(url)
-    tags = filter(lambda tag: tag[2] is not None, tags)
-    urls = [tag[2] for tag in tags]
+
+    tags = list(filter(lambda tag: tag[2] is not None, tags))
+    urls = [url for _, _, url in tags]
     base_document = parsing.modify(prepared_html, tags, for_changed_url)
-    store(path_to_save_doc, base_document)
+    store(path_to_save(base_name), base_document)
     for url in urls:
         local_doc = scrape.get_content(url)
         local_name = for_changed_url(url)
-        store(path_to_save_loc(local_name), local_doc)
+        store(path_to_save(local_name), local_doc)
