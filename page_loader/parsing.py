@@ -3,7 +3,7 @@
 """Parse the page and get local resources."""
 
 import re
-from typing import List
+from typing import List, Any
 
 import bs4
 from bs4 import BeautifulSoup
@@ -41,7 +41,7 @@ def find_tags(
 def modify(
     soup: bs4.BeautifulSoup,
     tags: List[List],
-    function,
+    function: Any,
 ) -> str:
     """Change the content of a tag."""
     if tags:
