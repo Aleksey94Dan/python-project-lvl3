@@ -52,4 +52,6 @@ Also you must have pip installed - The Python Package Installer.
 
 ## Download with verbose output
 
-    page-loader --output example2 https://ru.hexlet.io/courses
+    page-loader --output example2 https://ru.hexlet.io/courses -v debug
+
+
