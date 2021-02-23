@@ -5,6 +5,7 @@
 
 class DownloadError(Exception):
     """Exception due to download errors."""
+
     def __init__(self, expression, message):
         """Initializate of starting accepted values."""
         self.expression = expression
@@ -13,6 +14,7 @@ class DownloadError(Exception):
 
 class DownloadNetworkError(DownloadError):
     """Connection error exception."""
+
     def __init__(self, expression, message):
         """Initializate of starting accepted values."""
         self.expression = expression

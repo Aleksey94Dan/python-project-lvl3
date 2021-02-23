@@ -3,7 +3,7 @@
 """Parse the page and get local resources."""
 
 import re
-from typing import List, Any
+from typing import Any, List
 
 import bs4
 from bs4 import BeautifulSoup

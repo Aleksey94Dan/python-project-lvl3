@@ -43,7 +43,7 @@ def get_parser() -> argparse.ArgumentParser:
         '-v',
         '--verbosity',
         action='store',
-        default=logging.NONE,
+        default=logging.INFO,
         type=str,
         help='Enables verbose mode with logging display',
         choices=[

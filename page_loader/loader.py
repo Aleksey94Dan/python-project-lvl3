@@ -45,16 +45,16 @@ def download(url: str, path_to_save: str) -> None:  # noqa: WPS210
     base_document = scrape.get_content(url)
     prepared_html = parsing.prepare_html(base_document)
     tags = parsing.find_tags(prepared_html)
-    urls = parsing.get_urls(tags)
-    for index, url in enumerate(urls):
-        url = full_loc_url(url)
-        tags[index].append(url)
+
+    links = parsing.get_urls(tags)
+    for index, link in enumerate(links):
+        tags[index].append(full_loc_url(link))
 
     tags = list(filter(lambda tag: tag[2] is not None, tags))
-    urls = [url for _, _, url in tags]
+    sorted_urls = [url for _, _, url in tags]
     base_document = parsing.modify(prepared_html, tags, for_changed_url)
     store(path_to_save(base_name), base_document)
-    for url in urls:
-        local_doc = scrape.get_content(url)
-        local_name = for_changed_url(url)
+    for sorted_url in sorted_urls:
+        local_doc = scrape.get_content(sorted_url)
+        local_name = for_changed_url(sorted_url)
         store(path_to_save(local_name), local_doc)

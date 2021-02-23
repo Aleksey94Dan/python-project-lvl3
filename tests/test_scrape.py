@@ -35,3 +35,20 @@ def test_get_content(
     assert png == scrape.get_content(png_url)
     assert css == scrape.get_content(css_url)
     assert js == scrape.get_content(js_url)
+
+pytest.mark.parametrize(
+    (
+        'url', 'exception'
+    ),
+    [
+        (
+            
+        ),
+    ],
+)
+def test_wrong_request(url, exception, requests_mock):
+    """Test wrong requests."""
+    with requests_mock.Mocker() as mock:
+        mock.register_uri('GET', url, exc=exception)
+        with pytest.raises(exception):
+            scrape.get_content(url)

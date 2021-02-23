@@ -17,6 +17,12 @@ OK_CODE = 0
 def main() -> None:  # noqa: WPS210
     """Run a code."""
     args = cli.get_parser().parse_args()
+    url = args.url
+    output = args.output
+    level = args.verbosity
+    exit_code = OK_CODE
+    my_logging.setup(level)
+    loader.download(url, output)
 
 
 if __name__ == '__main__':
