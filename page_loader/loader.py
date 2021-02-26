@@ -9,7 +9,10 @@ from typing import Union
 
 from page_loader import parsing, scrape
 from page_loader import url as my_url
+from page_loader import errors
 
+
+ENCODING = 'utf-8'
 
 def _compose(g, f):  # noqa: WPS111
     def h(x):  # noqa: WPS111, WPS430
@@ -17,10 +20,17 @@ def _compose(g, f):  # noqa: WPS111
     return h
 
 
-def store(path_to_save: Path, data: Union[str, bytes]) -> None:  # noqa; WPS110
+def store(path_to_save: Path, data: Union[str, bytes]) -> None:  # noqa: WPS110
     """Write data along the specified path."""
-    with open(path_to_save, 'wb' if isinstance(data, bytes) else 'w') as out:
-        out.write(data)
+    mode, encoding = ('wb', None) if isinstance(data, bytes) else ('w', ENCODING)
+    try:
+        with open(path_to_save, mode, encoding=encoding) as out:
+            out.write(data)
+    except FileNotFoundError as err:
+        raise errors.DownloadFileError(
+    'This file {0} cannot exist.'
+    'Try to reduce the length of the filename'.format(path_to_save)
+    ) from err
 
 
 def make_directory(path_to_save: Path) -> None:
