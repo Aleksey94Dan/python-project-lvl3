@@ -7,12 +7,11 @@ from functools import partial
 from pathlib import Path
 from typing import Union
 
-from page_loader import parsing, scrape
+from page_loader import errors, parsing, scrape
 from page_loader import url as my_url
-from page_loader import errors
 
+UTF = 'utf-8'
 
-ENCODING = 'utf-8'
 
 def _compose(g, f):  # noqa: WPS111
     def h(x):  # noqa: WPS111, WPS430
@@ -22,21 +21,28 @@ def _compose(g, f):  # noqa: WPS111
 
 def store(path_to_save: Path, data: Union[str, bytes]) -> None:  # noqa: WPS110
     """Write data along the specified path."""
-    mode, encoding = ('wb', None) if isinstance(data, bytes) else ('w', ENCODING)
+    mode, encoding = ('wb', None) if isinstance(data, bytes) else ('w', UTF)
     try:
         with open(path_to_save, mode, encoding=encoding) as out:
             out.write(data)
     except FileNotFoundError as err:
         raise errors.DownloadFileError(
-    'This file {0} cannot exist.'
-    'Try to reduce the length of the filename'.format(path_to_save)
+        'This file "{0}" cannot exist.'
+        'Try to reduce the length of the filename'.format(path_to_save),
     ) from err
 
 
 def make_directory(path_to_save: Path) -> None:
     """Create a directory."""
-    if not os.path.exists(path_to_save):
-        os.mkdir(path_to_save)
+    try:
+        if not os.path.exists(path_to_save):
+            os.mkdir(path_to_save)
+    except PermissionError as err:
+        raise errors.DownloadDirectoryError(
+        'This file "{0}" cannot write this directory.'.format(
+            path_to_save,
+        ),
+    ) from err
 
 
 def download(url: str, path_to_save: str) -> None:  # noqa: WPS210

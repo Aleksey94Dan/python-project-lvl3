@@ -25,3 +25,11 @@ class DownloadFileError(DownloadError):
     def __init__(self, message):
         """Initializate of starting accepted values."""
         self.message = message
+
+
+class DownloadDirectoryError(DownloadError):
+    """"""
+
+    def __init__(self, message):
+        """Initializate of starting accepted values."""
+        self.message = message
