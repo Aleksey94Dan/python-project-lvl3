@@ -10,6 +10,7 @@ from requests.exceptions import (
     InvalidURL,
     InvalidSchema,
 )
+from page_loader import errors
 
 
 def get_content(url: str) -> Union[str, bytes]:
@@ -18,8 +19,14 @@ def get_content(url: str) -> Union[str, bytes]:
         response = requests.get(url)
         return response.text if response.encoding else response.content
     except InvalidURL as err1:
-        raise InvalidURL()
+        raise errors.DownloadError(
+            "Wrong url: {0}".format(url),
+        ) from err1
     except MissingSchema as err2:
-        raise MissingSchema()
+        raise errors.DownloadError(
+            "Your missed the 'http/https' in url: {0}".format(url),
+        ) from err2
     except InvalidSchema as err3:
-        raise InvalidSchema()
+        raise errors.DownloadError(
+            "You have the wrong scheme in url: {0}".format(url),
+        ) from err3

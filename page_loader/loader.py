@@ -44,7 +44,10 @@ def make_directory(path_to_save: Path) -> None:
         ),
     ) from err
 
-
+@errors.Supress(errors.DownloadError)
+@errors.Supress(errors.DownloadNetworkError)
+@errors.Supress(errors.DownloadDirectoryError)
+@errors.Supress(errors.DownloadFileError)
 def download(url: str, path_to_save: str) -> None:  # noqa: WPS210
     """Download and save resource in directory."""
     base_name = my_url.to_name(url)
@@ -55,7 +58,6 @@ def download(url: str, path_to_save: str) -> None:  # noqa: WPS210
         partial(os.path.join, base_directory),
         my_url.to_name,
     )
-
     make_directory(path_to_save(base_directory))
 
     base_document = scrape.get_content(url)

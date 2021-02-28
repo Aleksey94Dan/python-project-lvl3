@@ -6,7 +6,6 @@
 
 import logging
 import sys
-
 from page_loader import cli, loader
 from page_loader import logging as my_logging
 
@@ -23,7 +22,6 @@ def main() -> None:  # noqa: WPS210
     exit_code = OK_CODE
     my_logging.setup(level)
     loader.download(url, output)
-
 
 if __name__ == '__main__':
     main()
