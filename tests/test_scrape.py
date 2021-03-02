@@ -36,6 +36,7 @@ def test_get_content(
     assert css == scrape.get_content(css_url)
     assert js == scrape.get_content(js_url)
 
+
 pytest.mark.parametrize(
     (
         'url', 'exception'

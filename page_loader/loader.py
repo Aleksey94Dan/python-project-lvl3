@@ -44,6 +44,7 @@ def make_directory(path_to_save: Path) -> None:
         ),
     ) from err
 
+
 @errors.Supress(errors.DownloadError)
 @errors.Supress(errors.DownloadNetworkError)
 @errors.Supress(errors.DownloadDirectoryError)
