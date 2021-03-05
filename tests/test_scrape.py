@@ -4,7 +4,7 @@
 
 import pytest
 
-from page_loader import scrape
+from page_loader import errors, scrape
 
 
 @pytest.mark.parametrize(  # noqa: WPS317, WPS211
@@ -37,19 +37,19 @@ def test_get_content(
     assert js == scrape.get_content(js_url)
 
 
-pytest.mark.parametrize(
+@pytest.mark.parametrize(
     (
-        'url', 'exception'
+        'url', 'exception',
     ),
     [
         (
-            
+            'meduza.io', errors.DownloadError,
         ),
     ],
 )
 def test_wrong_request(url, exception, requests_mock):
     """Test wrong requests."""
-    with requests_mock.Mocker() as mock:
-        mock.register_uri('GET', url, exc=exception)
-        with pytest.raises(exception):
-            scrape.get_content(url)
+    requests_mock.register_uri('GET', url, exc=exception)
+
+    with pytest.raises(exception):
+        scrape.get_content(url)

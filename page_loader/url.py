@@ -42,3 +42,4 @@ def to_full_url(base_url: str, local_url: str) -> Optional[str]:
         return None
     if base_parsed.netloc == local_parsed.netloc or not local_parsed.netloc:
         return urljoin(base_url, local_url)
+    return None

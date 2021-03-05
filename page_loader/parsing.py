@@ -3,7 +3,7 @@
 """Parse the page and get local resources."""
 
 import re
-from typing import Any, List
+from typing import Any, Iterable, List
 
 import bs4
 from bs4 import BeautifulSoup
@@ -21,10 +21,9 @@ def prepare_html(html: str) -> bs4.BeautifulSoup:
     return BeautifulSoup(html, PARSER)
 
 
-def get_urls(tags: List[List]) -> List[str]:
+def get_urls(tags: List[List]) -> Iterable[str]:
     """Get return urls."""
-    if tags:
-        return [tag.get(attr) for tag, attr in tags]
+    return [tag.get(attr) for tag, attr in tags]
 
 
 def find_tags(

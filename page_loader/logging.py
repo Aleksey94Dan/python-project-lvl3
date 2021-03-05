@@ -13,7 +13,6 @@ ERROR = 'error'
 
 def setup(level: Optional[str]):
     """Configure a basic logger."""
-    log_level = None
     if level == INFO:
         log_level = logging.INFO
     elif level == DEBUG:

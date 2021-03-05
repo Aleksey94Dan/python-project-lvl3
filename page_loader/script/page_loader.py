@@ -3,10 +3,10 @@
 # -*- coding:utf-8 -*-
 
 """The main parsing script."""
-
 import logging
 import sys
-from page_loader import cli, loader
+
+from page_loader import cli, errors, loader
 from page_loader import logging as my_logging
 
 ABORT_CODE = 1
@@ -19,9 +19,22 @@ def main() -> None:  # noqa: WPS210
     url = args.url
     output = args.output
     level = args.verbosity
-    exit_code = OK_CODE
     my_logging.setup(level)
-    loader.download(url, output)
+    logging.debug(
+        'The following arguments were introduced: {0}'.format(args),
+    )
+    exit_code = OK_CODE
+    try:
+        loader.download(url, output)
+    except errors.DownloadError as mistake:
+        logging.debug(
+            str(mistake.__cause__),  # noqa: WPS609
+            exc_info=True,
+        )
+        logging.error(mistake.message)
+        exit_code = ABORT_CODE
+    sys.exit(exit_code)
+
 
 if __name__ == '__main__':
     main()
