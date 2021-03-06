@@ -31,6 +31,7 @@ def test_loader(
 ):
     """Test download and save page."""
     with TemporaryDirectory() as tmpdirname:
+        assert not os.listdir(tmpdirname)
         path_to_save = tmpdirname
         base_name = url.to_name(base_url)
         base_directory = url.to_name(base_url, directory=True)
@@ -39,7 +40,9 @@ def test_loader(
         requests_mock.get(css_url, content=css)
         requests_mock.get(js_url, content=js)
 
-        loader.download(base_url, path_to_save)
+        ouput = loader.download(base_url, path_to_save)
+        assert len(os.listdir(tmpdirname)) == 2
+        assert ouput == os.path.join(tmpdirname, base_name)
         local_resource = os.listdir(os.path.join(path_to_save, base_directory))
         local_resource.sort()
         expected_file_name.sort()
