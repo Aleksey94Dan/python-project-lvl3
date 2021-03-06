@@ -14,6 +14,7 @@ def get_content(url: str) -> Union[str, bytes]:
     """Pull page content."""
     try:  # noqa: WPS225
         response = requests.get(url)
+        response.raise_for_status()  # noqa: WPS229
     except ConnectionError as err1:
         raise errors.DownloadError(
             'An error occurred connecting to {0}'.format(url),
