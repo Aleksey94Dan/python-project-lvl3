@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from page_loader import loader, url
+from page_loader import errors, loader, url
 
 
 @pytest.mark.parametrize(  # noqa: WPS317, WPS211, WPS210
@@ -49,3 +49,15 @@ def test_loader(
 
         assert actually_html == expected_html
         assert local_resource == expected_file_name
+
+
+def test_bad_loader(requests_mock):
+    """Test bad download."""
+    invalid_url = 'https://badsite.com'
+    requests_mock.get(invalid_url, exc=errors.DownloadError)
+
+    with TemporaryDirectory() as tmpdirname:
+        assert not os.listdir(tmpdirname)
+
+        with pytest.raises(Exception):  # noqa: PT011
+            assert loader.download(invalid_url, tmpdirname)

@@ -11,14 +11,14 @@ from page_loader import url
         'actually_url', 'expected_url',
     ),
     [
-        ('http://www.example.com/index.html', 'www-example-com-index.html'),
-        ('http://www.EXAMPLE.com/index.html', 'www-example-com-index.html'),
-        ('https://ru.hexlet.io/courses', 'ru-hexlet-io-courses.html'),
+        ('http://www.example.com/index.html/', 'www-example-com-index.html'),
+        ('http://www.EXAMPLE.com/index.html/', 'www-example-com-index.html'),
+        ('https://ru.hexlet.io/courses/', 'ru-hexlet-io-courses.html'),
         (
-            'https://en.wikipedia.org/wiki/URL',
+            'https://en.wikipedia.org/wiki/URL/',
             'en-wikipedia-org-wiki-url.html',
         ),
-        ('https://aliexpress.ru/home.htm', 'aliexpress-ru-home.htm'),
+        ('https://aliexpress.ru/home.htm/', 'aliexpress-ru-home.htm'),
         (
             'https://www.windy.com/ru/-%D0%A0%D0%9C2-5-pm2p5?cams,'
             'pm2p5,55.332,86.054,11a',
@@ -33,9 +33,9 @@ from page_loader import url
             '400113214004ca',
             'mpaign-aliexpress-com-wow-gcp-ae-channel-ae-accelerate-tupr.html',
         ),
-        ('/imagenes/logo-akus.jpg', 'imagenes-logo-akus.jpg'),
-        ('/en-US/docs/style.css', 'en-us-docs-style.css'),
-        ('/en-US/docs/Learn.png', 'en-us-docs-learn.png'),
+        ('/imagenes/logo-akus.jpg/', 'imagenes-logo-akus.jpg'),
+        ('/en-US/docs/style.css/', 'en-us-docs-style.css'),
+        ('/en-US/docs/Learn.png/', 'en-us-docs-learn.png'),
         ('/en-US/docs/', 'en-us-docs.html'),
     ],
 )
@@ -49,9 +49,7 @@ def test_to_name(actually_url, expected_url):
         'actually_url', 'expected_name',
     ),
     [
-        ('http://www.example.com/index.html', 'www-example-com-index_files'),
-        ('http://www.EXAMPLE.com/index.html', 'www-example-com-index_files'),
-        ('https://ru.hexlet.io/courses', 'ru-hexlet-io-courses_files'),
+        ('http://www.EXAMPLE.com/index.html/', 'www-example-com-index_files'),
         ('https://ru.hexlet.io/courses/', 'ru-hexlet-io-courses_files'),
         ('https://ru.hexlet.io/', 'ru-hexlet_files'),
         (

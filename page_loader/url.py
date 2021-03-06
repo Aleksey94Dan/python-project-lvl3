@@ -10,7 +10,6 @@ from urllib.parse import unquote, urljoin, urlparse
 REPLACEMENT_SIGN = '-'
 EXTENSIONS = ('.html', '.io', '', 'htm')
 FILES = '_files'
-LIMITER_LENGTH_URL = 2000
 ADAPTERS = ('http', 'https', '')
 TEMPLATE = '{0}{1}'
 
@@ -22,9 +21,9 @@ PATTERN_FOR_TAGS = re.compile(r'(link)|(script)|(img)')
 def to_name(url: str, directory: bool = False) -> str:
     """Return the transformed name by pattern for base url."""
     url = unquote(url)
-    url = re.sub(PATTERN_FOR_STRIP, '', url)
     parsed_url = urlparse(url)
     domain = '{0}{1}'.format(parsed_url.netloc, parsed_url.path)
+    domain = re.sub(PATTERN_FOR_STRIP, '', domain)
     url, extension = os.path.splitext(domain)
     name = re.sub(PATTERN_FOR_REPLACE, REPLACEMENT_SIGN, url.lower())
     if directory:

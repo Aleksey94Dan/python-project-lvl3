@@ -11,6 +11,7 @@ from page_loader import errors, parsing, scrape
 from page_loader import url as my_url
 
 ENCODING = 'utf-8'
+LIMITER_LENGTH_URL = 2000
 
 
 def _compose(g, f):  # noqa: WPS111
