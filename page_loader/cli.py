@@ -5,7 +5,7 @@
 import argparse
 import os
 
-from page_loader import logging
+from page_loader import my_logging
 
 
 def dir_path(path: str) -> str:
@@ -43,14 +43,14 @@ def get_parser() -> argparse.ArgumentParser:
         '-v',
         '--verbosity',
         action='store',
-        default=logging.INFO,
+        default=my_logging.INFO,
         type=str,
         help='Enables verbose mode with logging display',
         choices=[
-            logging.NONE,
-            logging.INFO,
-            logging.DEBUG,
-            logging.ERROR,
+            my_logging.NONE,
+            my_logging.INFO,
+            my_logging.DEBUG,
+            my_logging.ERROR,
         ],
     )
     return parser
