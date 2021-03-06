@@ -23,7 +23,7 @@ def setup(level: Optional[str]):
     logger = logging.getLogger()
     logger.setLevel(log_level)
     formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s',
+        '%(asctime)s - %(levelname)s - %(message)s',  # noqa: WPS323
     )
     chanel = logging.StreamHandler()
     chanel.setFormatter(formatter)

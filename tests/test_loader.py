@@ -61,3 +61,4 @@ def test_bad_loader(requests_mock):
 
         with pytest.raises(Exception):  # noqa: PT011
             assert loader.download(invalid_url, tmpdirname)
+        assert not os.listdir(tmpdirname)

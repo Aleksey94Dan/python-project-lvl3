@@ -64,9 +64,10 @@ def download(url: str, path_to_save: str) -> None:
         partial(os.path.join, base_directory),
         my_url.to_name,
     )
-    make_directory(to_save(base_directory))
-
     base_document = scrape.get_content(url)
+    if base_document:
+        make_directory(to_save(base_directory))
+
     prepared_html = parsing.prepare_html(base_document)  # type: ignore
     tags = parsing.find_tags(prepared_html)
 

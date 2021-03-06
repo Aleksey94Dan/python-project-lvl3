@@ -37,19 +37,27 @@ def test_get_content(
     assert js == scrape.get_content(js_url)
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # noqa: PT006
     (
-        'url', 'exception',
+        'url', 'message',
     ),
     [
         (
-            'meduza.io', errors.DownloadError,
+            'meduza.io', 'Your missed the "http/https" in url: {0}',
+        ),
+        (
+            'https://medza.io', 'An error occurred connecting to {0}',
+        ),
+        (
+            'httpd://meduza.io', 'You have the wrong scheme in url: {0}',
         ),
     ],
 )
-def test_wrong_request(url, exception, requests_mock):
+def test_wrong_request(url, message, requests_mock):
     """Test wrong requests."""
-    requests_mock.register_uri('GET', url, exc=exception)
-
-    with pytest.raises(exception):
+    requests_mock.get(
+        url,
+        exc=errors.DownloadError(message.format(url)),
+    )
+    with pytest.raises(Exception, match=message.format(url)):
         scrape.get_content(url)

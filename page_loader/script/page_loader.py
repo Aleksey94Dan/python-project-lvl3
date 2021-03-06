@@ -6,8 +6,7 @@
 import logging
 import sys
 
-from page_loader import cli, errors, loader
-from page_loader import logging as my_logging
+from page_loader import cli, errors, loader, my_logging
 
 ABORT_CODE = 1
 OK_CODE = 0
