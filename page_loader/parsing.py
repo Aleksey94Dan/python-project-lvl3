@@ -13,7 +13,7 @@ PARSER = 'lxml'
 HREF = 'href'
 SRC = 'src'
 UTF = 'utf-8'
-FORMATTER = 'html5'
+FORMATTER = 'html'
 
 
 def prepare_html(html: str) -> bs4.BeautifulSoup:
