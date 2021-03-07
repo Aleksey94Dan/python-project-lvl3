@@ -46,4 +46,4 @@ def modify(
     if tags:
         for tag, attr, changed_url in tags:
             tag[attr] = function(changed_url)
-    return soup.prettify(formatter=FORMATTER)
+    return soup.prettify()
