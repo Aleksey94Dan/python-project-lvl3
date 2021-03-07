@@ -36,14 +36,14 @@ def html():
 def expected_html():
     """Return expected html file."""
     ex_html = BeautifulSoup(_get_file(EXPECTED_HTML), 'lxml')
-    return ex_html.prettify()
+    return ex_html.prettify(formatter='html5')
 
 
 @pytest.fixture()
 def expected_for_changed():
     """Return expected html file."""
     html_for = BeautifulSoup(_get_file(EXPECTED_FOR_CHANGED), 'lxml')
-    return html_for.prettify()
+    return html_for.prettify(formatter='html5')
 
 
 @pytest.fixture()

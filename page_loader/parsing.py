@@ -9,10 +9,11 @@ import bs4
 from bs4 import BeautifulSoup
 
 PATTERN_FOR_TAGS = re.compile(r'(link)|(script)|(img)')
-PARSER = 'html.parser'
+PARSER = 'lxml'
 HREF = 'href'
 SRC = 'src'
 UTF = 'utf-8'
+FORMATTER = 'html5'
 
 
 def prepare_html(html: str) -> bs4.BeautifulSoup:
@@ -45,4 +46,4 @@ def modify(
     if tags:
         for tag, attr, changed_url in tags:
             tag[attr] = function(changed_url)
-    return soup.prettify()
+    return soup.prettify(formatter=FORMATTER)
