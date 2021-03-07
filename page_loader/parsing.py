@@ -9,11 +9,10 @@ import bs4
 from bs4 import BeautifulSoup
 
 PATTERN_FOR_TAGS = re.compile(r'(link)|(script)|(img)')
-PARSER = 'html.parser'
+PARSER = 'lxml'
 HREF = 'href'
 SRC = 'src'
 UTF = 'utf-8'
-FORMATTER = 'html'
 
 
 def prepare_html(html: str) -> bs4.BeautifulSoup:
