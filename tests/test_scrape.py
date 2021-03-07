@@ -61,3 +61,28 @@ def test_wrong_request(url, message, requests_mock):
     )
     with pytest.raises(Exception, match=message.format(url)):
         scrape.get_content(url)
+
+
+@pytest.mark.parametrize(
+    'code',
+    [
+        (
+            200,
+        ),
+        (
+            300,
+        ),
+        (
+            404,
+        ),
+        (
+            500,
+        ),
+    ],
+)
+def test_bad_status_code(code, requests_mock):
+    """Test response codes."""
+    url = 'https://status_code/{0}'.format(code)
+    requests_mock.get(url, status_code=code)
+    with pytest.raises(Exception):  # noqa: PT011
+        scrape.get(url)
