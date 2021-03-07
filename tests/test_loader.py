@@ -65,3 +65,15 @@ def test_bad_loader(requests_mock):
         with pytest.raises(Exception):  # noqa: PT011
             assert loader.download(invalid_url, tmpdirname)
         assert not os.listdir(tmpdirname)
+
+
+@pytest.mark.parametrize('base_url', ['https://ru.hexlet.io/courses/{0}'])
+@pytest.mark.parametrize('code', [404, 500])
+def test_response_with_error(base_url, code, requests_mock):
+    """Test bad responses."""
+    url = base_url.format(code)  # noqa:WPS442
+    requests_mock.get(url, status_code=code)
+
+    with TemporaryDirectory() as tmpdirname:
+        with pytest.raises(Exception):  # noqa: PT011
+            assert loader.download(url, tmpdirname)

@@ -26,4 +26,5 @@ def get_content(url: str) -> Union[str, bytes]:
         raise errors.DownloadError(
             'You have the wrong scheme in url: {0}'.format(url),
         ) from err3
+    response.raise_for_status()
     return response.text if response.encoding else response.content

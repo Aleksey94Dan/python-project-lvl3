@@ -64,21 +64,7 @@ def test_wrong_request(url, message, requests_mock):
 
 
 @pytest.mark.parametrize(
-    'code',
-    [
-        (
-            200,
-        ),
-        (
-            300,
-        ),
-        (
-            404,
-        ),
-        (
-            500,
-        ),
-    ],
+    'code', [200, 300, 404, 500],
 )
 def test_bad_status_code(code, requests_mock):
     """Test response codes."""
