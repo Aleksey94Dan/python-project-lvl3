@@ -18,7 +18,7 @@ FORMATTER = 'html5'
 
 def prepare_html(html: str) -> bs4.BeautifulSoup:
     """Prepare the page for parsing."""
-    return BeautifulSoup(html, PARSER)
+    return BeautifulSoup(html, features=PARSER)
 
 
 def get_urls(tags: List[List]) -> Iterable[str]:
