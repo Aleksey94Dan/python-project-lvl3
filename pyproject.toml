@@ -3,7 +3,10 @@ name = "hexlet-code"
 version = "0.1.4"
 description = "A utility for downloading the specified address from the network. The utility downloads all the resources specified on the page and changes the page so that it starts referring to local versions."
 authors = ["Aleksey Danilchenko <danilchenko.aleksey94@gmail.com>"]
-packages=[{ include = "page_loader" }]
+packages=[
+    { include = "page_loader" },
+    { include = "page_loader/loader.py" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.7"
