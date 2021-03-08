@@ -30,28 +30,16 @@ def main() -> None:  # noqa: WPS210, WPS213
         path_to_page = loader.download(url, output)
         exit_code = EXIT_SUCCES
     except errors.DownloadDirectoryError as err1:
-        logging.debug(
-            str(err1.__cause__),  # noqa: WPS609
-            exc_info=True,
-        )
+        logging.debug(str(err1.__cause__), exc_info=True)
         logging.error(err1.message)
     except errors.DownloadFileError as err2:
-        logging.debug(
-            str(err2.__cause__),  # noqa: WPS609
-            exc_info=True,
-        )
+        logging.debug(str(err2.__cause__), exc_info=True)
         logging.error(err2.message)
     except errors.DownloadNetworkError as err3:
-        logging.debug(
-            str(err3.__cause__),  # noqa: WPS609
-            exc_info=True,
-        )
+        logging.debug(str(err3.__cause__), exc_info=True)
         logging.error(err3.message)
     except errors.DownloadFileError as err4:
-        logging.debug(
-            str(err4.__cause__),  # noqa: WPS609
-            exc_info=True,
-        )
+        logging.debug(str(err4.__cause__), exc_info=True)
         logging.error(err4.message)
     my_print('Page loading completed successfully to {0}'.format(path_to_page))
     sys.exit(exit_code)

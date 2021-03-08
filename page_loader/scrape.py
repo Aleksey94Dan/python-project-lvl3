@@ -34,6 +34,6 @@ def get_content(url: str) -> Union[str, bytes]:
     except InvalidURL as err4:
         raise errors.DownloadError(
             'You entered an invalid url: {0}'.format(url),
-    ) from err4
+        ) from err4
     response.raise_for_status()
     return response.text if response.encoding else response.content
