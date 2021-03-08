@@ -27,8 +27,7 @@ def get_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        '-u',
-        '--url',
+        'url',
         type=str,
         help='Enter the correct page address',
     )
