@@ -7,6 +7,15 @@ packages=[
     { include = "page_loader" },
 ]
 
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Environment :: Console",
+    "Topic :: Internet",
+]
+
+readme = "README.md"
+
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = "^2.24.0"
