@@ -18,10 +18,12 @@ def main() -> None:  # noqa: WPS210
     url = args.url
     output = args.output
     level = args.verbosity
+
     my_logging.setup(level)
     logging.debug(
         'The following arguments were introduced: {0}'.format(args),
     )
+
     exit_code = OK_CODE
     try:
         loader.download(url, output)

@@ -8,6 +8,8 @@ from typing import Union
 import pytest
 from bs4 import BeautifulSoup
 
+from page_loader import my_logging
+
 BASE_URL = 'https://ru.hexlet.io/courses'
 PNG_URL = 'https://ru.hexlet.io/assets/professions/nodejs.png'
 CSS_URL = 'https://ru.hexlet.io/assets/application.css'
@@ -19,6 +21,9 @@ EXPECTED_FOR_CHANGED = 'tests/fixture/site/expected/expected_for_changed.html'
 PNG = 'tests/fixture/site/assets/professions/nodejs.png'
 CSS = 'tests/fixture/site/assets/application.css'
 JS = 'tests/fixture/site/packs/js/runtime.js'
+
+
+my_logging.setup(my_logging.DEBUG)
 
 
 def _get_file(path_to_file: Path, mode: str = 'r') -> Union[str, bytes]:

@@ -4,7 +4,7 @@
 
 import pytest
 
-from page_loader import errors, scrape
+from page_loader import scrape
 
 
 @pytest.mark.parametrize(  # noqa: WPS317, WPS211
@@ -35,32 +35,6 @@ def test_get_content(
     assert png == scrape.get_content(png_url)
     assert css == scrape.get_content(css_url)
     assert js == scrape.get_content(js_url)
-
-
-@pytest.mark.parametrize(  # noqa: PT006
-    (
-        'url', 'message',
-    ),
-    [
-        (
-            'meduza.io', 'Your missed the "http/https" in url: {0}',
-        ),
-        (
-            'https://medza.io', 'An error occurred connecting to {0}',
-        ),
-        (
-            'httpd://meduza.io', 'You have the wrong scheme in url: {0}',
-        ),
-    ],
-)
-def test_wrong_request(url, message, requests_mock):
-    """Test wrong requests."""
-    requests_mock.get(
-        url,
-        exc=errors.DownloadError(message.format(url)),
-    )
-    with pytest.raises(Exception, match=message.format(url)):
-        scrape.get_content(url)
 
 
 @pytest.mark.parametrize(
