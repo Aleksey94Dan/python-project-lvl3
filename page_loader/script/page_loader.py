@@ -11,6 +11,8 @@ from page_loader import cli, errors, loader, my_logging
 EXIT_SUCCES = 0
 EXIT_FAILURE = 1
 
+my_print = print
+
 
 def main() -> None:  # noqa: WPS210, WPS213
     """Run a code."""
@@ -25,7 +27,7 @@ def main() -> None:  # noqa: WPS210, WPS213
     )
     exit_code = EXIT_FAILURE
     try:  # noqa: WPS225, WPS229
-        loader.download(url, output)
+        path_to_page = loader.download(url, output)
         exit_code = EXIT_SUCCES
     except errors.DownloadDirectoryError as err1:
         logging.debug(
@@ -51,6 +53,7 @@ def main() -> None:  # noqa: WPS210, WPS213
             exc_info=True,
         )
         logging.error(err4.message)
+    my_print('Page loading completed successfully to {0}'.format(path_to_page))
     sys.exit(exit_code)
 
 
