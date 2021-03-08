@@ -32,9 +32,9 @@ def store(path_to_save: Path, data: Union[str, bytes]) -> None:  # noqa: WPS110
             out.write(data)
     except OSError as err:
         raise errors.DownloadFileError(
-        'This file "{0}" cannot exist.'
-        'Try to reduce the length of the filename'.format(path_to_save),
-    ) from err
+            'This file "{0}" cannot exist.'
+            'Try to reduce the length of the filename'.format(path_to_save),
+        ) from err
 
 
 def make_directory(path_to_save: Path) -> None:
@@ -44,10 +44,10 @@ def make_directory(path_to_save: Path) -> None:
             os.mkdir(path_to_save)
     except PermissionError as err:
         raise errors.DownloadDirectoryError(
-        'This file "{0}" cannot write this directory.'.format(
-            path_to_save,
-        ),
-    ) from err
+            'This file "{0}" cannot write this directory.'.format(
+                path_to_save,
+            ),
+        ) from err
 
 
 def download(url: str, path_to_save: str) -> Path:  # noqa: WPS210
