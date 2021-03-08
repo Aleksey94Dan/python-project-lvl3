@@ -30,7 +30,7 @@ def store(path_to_save: Path, data: Union[str, bytes]) -> None:  # noqa: WPS110
     try:
         with open(path_to_save, mode, encoding=encoding) as out:
             out.write(data)
-    except FileNotFoundError as err:
+    except OSError as err:
         raise errors.DownloadFileError(
         'This file "{0}" cannot exist.'
         'Try to reduce the length of the filename'.format(path_to_save),
