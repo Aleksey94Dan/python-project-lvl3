@@ -8,32 +8,34 @@ import sys
 
 from page_loader import cli, errors, loader, my_logging
 
-ABORT_CODE = 1
-OK_CODE = 0
+EXIT_SUCCES = 0
+EXIT_FAILURE = 1
 
 
 def main() -> None:  # noqa: WPS210
     """Run a code."""
-    args = cli.get_parser().parse_args()
-    url = args.url
-    output = args.output
-    level = args.verbosity
+    try:  # noqa: WPS229
+        args = cli.get_parser().parse_args()
+        url = args.url
+        output = args.output
+        level = args.verbosity
 
-    my_logging.setup(level)
-    logging.debug(
-        'The following arguments were introduced: {0}'.format(args),
-    )
-
-    exit_code = OK_CODE
-    try:
-        loader.download(url, output)
-    except errors.DownloadError as mistake:
+        my_logging.setup(level)
         logging.debug(
-            str(mistake.__cause__),  # noqa: WPS609
+            'The following arguments were introduced: {0}'.format(args),
+        )
+
+        exit_code = EXIT_SUCCES
+        loader.download(url, output)
+    except SystemExit as mistake1:
+        exit_code = mistake1.code
+    except errors.DownloadError as mistake2:
+        logging.debug(
+            str(mistake2.__cause__),  # noqa: WPS609
             exc_info=True,
         )
-        logging.error(mistake.message)
-        exit_code = ABORT_CODE
+        logging.error(mistake2.message)
+        exit_code = EXIT_FAILURE
     sys.exit(exit_code)
 
 
