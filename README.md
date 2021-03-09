@@ -24,18 +24,20 @@ Also you must have pip installed - The Python Package Installer.
 # Help
 
     page-loader -h
-    usage: page-loader [-h] [-u URL] [-o OUTPUT] [-v {none,info,debug,error}]
+    usage: page-loader [-h] [-o OUTPUT] [-v {none,info,debug,error}] url
 
     Downloads a page from the network at the specified address and puts it in the
     specified folder
 
+    positional arguments:
+    url                   Enter the correct page address
+
     optional arguments:
     -h, --help            show this help message and exit
-    -u URL, --url URL     Enter the correct page address
     -o OUTPUT, --output OUTPUT
-                            The directory where to save files
+                          The directory where to save files
     -v {none,info,debug,error}, --verbosity {none,info,debug,error}
-                            Enables verbose mode with logging display
+                          Enables verbose mode with logging displa
 
 # Application call example
 
