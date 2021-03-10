@@ -2,6 +2,7 @@
 
 """The module sends HTTP requests to the content."""
 
+
 from typing import Union
 
 import requests
@@ -13,12 +14,35 @@ from requests.exceptions import (
 )
 
 from page_loader import errors
+from functools import wraps
+from progress.bar import Bar
+
+#!/usr/bin/env python
 
 
+import random
+import time
+
+from progress.bar import IncrementalBar
+
+def progress_bar(function):
+    @wraps(function)
+    def wrapped(args):
+        content = b''
+        suffix = '%(percent)d%% [%(elapsed_td)s / %(eta)d / %(eta_td)s]'
+        with IncrementalBar(args, suffix = suffix, max=200) as bar:
+            for i in function(args):
+                bar.next()
+                content += i
+        return content
+    return wrapped
+
+
+@progress_bar
 def get_content(url: str) -> Union[str, bytes]:
     """Pull page content."""
     try:  # noqa: WPS225
-        response = requests.get(url)
+        response = requests.get(url, stream=True)
     except ConnectionError as err1:
         raise errors.DownloadError(
             'An error occurred connecting to {0}'.format(url),
@@ -36,4 +60,9 @@ def get_content(url: str) -> Union[str, bytes]:
             'You entered an invalid url: {0}'.format(url),
         ) from err4
     response.raise_for_status()
-    return response.text if response.encoding else response.content
+    if response.encoding is None:
+        r.encoding = 'utf-8'
+    return response.iter_lines()
+
+
+print(get_content('https://habr.com/ru/'))
