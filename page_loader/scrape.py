@@ -5,7 +5,7 @@ from functools import wraps
 from typing import Union
 
 import requests
-from progress.bar import IncrementalBar
+from progress.spinner import LineSpinner
 from requests.exceptions import (
     ConnectionError,
     InvalidSchema,
@@ -19,13 +19,12 @@ from page_loader import errors
 def progress_bar(function):  # noqa: D103
     @wraps(function)  # noqa: WPS430
     def wrapped(args):
-        suffix = '%(percent)d%% [%(elapsed_td)s / %(eta)d / %(eta_td)s]'
-        with IncrementalBar(args, suffix=suffix) as pb_bar:
+        with LineSpinner(args) as pb_bar:
             lines = function(args)
             acc = next(lines)
             for line in lines:
-                pb_bar.next()  # noqa: B305
                 acc += line
+                pb_bar.next()  # noqa: B305
         return acc
     return wrapped
 
