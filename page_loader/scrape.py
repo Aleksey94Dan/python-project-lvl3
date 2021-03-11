@@ -2,7 +2,7 @@
 
 """The module sends HTTP requests to the content."""
 from functools import wraps
-from typing import Union
+from typing import Iterator, Union
 
 import requests
 from progress.spinner import LineSpinner
@@ -21,7 +21,10 @@ def progress_bar(function):  # noqa: D103
     def wrapped(args):
         with LineSpinner(args) as pb_bar:
             lines = function(args)
-            acc = next(lines)
+            try:
+                acc = next(lines)
+            except StopIteration:
+                acc = b''
             for line in lines:
                 acc += line
                 pb_bar.next()  # noqa: B305
@@ -30,7 +33,7 @@ def progress_bar(function):  # noqa: D103
 
 
 @progress_bar
-def get_content(url: str) -> Union[str, bytes]:
+def get_content(url: str) -> Iterator[Union[str, bytes]]:
     """Pull page content."""
     try:  # noqa: WPS225
         response = requests.get(url, stream=True)
@@ -51,5 +54,4 @@ def get_content(url: str) -> Union[str, bytes]:
             'You entered an invalid url: {0}'.format(url),
         ) from err4
     response.raise_for_status()
-    response.encoding = 'utf-8'
-    return response.iter_content()
+    return response.iter_content(decode_unicode=True)
