@@ -17,21 +17,16 @@ from page_loader import errors
 from functools import wraps
 from progress.bar import Bar
 
-#!/usr/bin/env python
-
-
-import random
-import time
-
 from progress.bar import IncrementalBar
 
 def progress_bar(function):
     @wraps(function)
     def wrapped(args):
-        content = b''
+        gen = function(args)
+        content = next(gen)
         suffix = '%(percent)d%% [%(elapsed_td)s / %(eta)d / %(eta_td)s]'
         with IncrementalBar(args, suffix = suffix, max=200) as bar:
-            for i in function(args):
+            for i in gen:
                 bar.next()
                 content += i
         return content
@@ -61,8 +56,8 @@ def get_content(url: str) -> Union[str, bytes]:
         ) from err4
     response.raise_for_status()
     if response.encoding is None:
-        r.encoding = 'utf-8'
-    return response.iter_lines()
+        response.encoding = 'utf-8'
+    return response.iter_content(decode_unicode=True)
 
 
 print(get_content('https://habr.com/ru/'))
