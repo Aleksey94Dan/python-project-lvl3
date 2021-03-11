@@ -1,5 +1,6 @@
 
 version: "2"
 exclude_patterns:
- - "page-load/scripts/*.py"
+ - "page_loader/scripts/*.py"
+ - "page_loader/__init__.py"
 
