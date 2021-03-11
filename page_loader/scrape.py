@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 
 """The module sends HTTP requests to the content."""
-
-
+from functools import wraps
 from typing import Union
 
 import requests
+from progress.bar import IncrementalBar
 from requests.exceptions import (
     ConnectionError,
     InvalidSchema,
@@ -14,22 +14,19 @@ from requests.exceptions import (
 )
 
 from page_loader import errors
-from functools import wraps
-from progress.bar import Bar
 
-from progress.bar import IncrementalBar
 
-def progress_bar(function):
-    @wraps(function)
+def progress_bar(function):  # noqa: D103
+    @wraps(function)  # noqa: WPS430
     def wrapped(args):
-        gen = function(args)
-        content = next(gen)
         suffix = '%(percent)d%% [%(elapsed_td)s / %(eta)d / %(eta_td)s]'
-        with IncrementalBar(args, suffix = suffix, max=200) as bar:
-            for i in gen:
-                bar.next()
-                content += i
-        return content
+        with IncrementalBar(args, suffix=suffix) as pb_bar:
+            lines = function(args)
+            acc = next(lines)
+            for line in lines:
+                pb_bar.next()  # noqa: B305
+                acc += line
+        return acc
     return wrapped
 
 
@@ -55,9 +52,5 @@ def get_content(url: str) -> Union[str, bytes]:
             'You entered an invalid url: {0}'.format(url),
         ) from err4
     response.raise_for_status()
-    if response.encoding is None:
-        response.encoding = 'utf-8'
+    response.encoding = 'utf-8'
     return response.iter_content()
-
-
-print(get_content('https://habr.com/ru/'))
