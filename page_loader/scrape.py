@@ -57,7 +57,7 @@ def get_content(url: str) -> Union[str, bytes]:
     response.raise_for_status()
     if response.encoding is None:
         response.encoding = 'utf-8'
-    return response.iter_content(decode_unicode=True)
+    return response.iter_content()
 
 
 print(get_content('https://habr.com/ru/'))
