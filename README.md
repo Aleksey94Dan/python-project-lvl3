@@ -18,9 +18,7 @@ Also you must have pip installed - The Python Package Installer.
 
     pip install -U -i https://test.pypi.org/simple/ aleksey94dan-page-load --extra-index-url https://pypi.org/simple
 
-[![asciicast](https://asciinema.org/a/yeGqzqMxnapSBG02xzb9ZWsfK.svg)](https://asciinema.org/a/yeGqzqMxnapSBG02xzb9ZWsfK)
-
-
+[![asciicast](https://asciinema.org/a/A49DNS73dDzROGy622xSyv9RA.svg)](https://asciinema.org/a/A49DNS73dDzROGy622xSyv9RA)
 # Help
 
     page-loader -h
@@ -43,17 +41,18 @@ Also you must have pip installed - The Python Package Installer.
 
 ## Download to current directory
 
-    page-loader https://ru.hexlet.io/courses
+    page-loader https://page-loader.hexlet.repl.co/
 
-
-
+[![asciicast](https://asciinema.org/a/bVCQzYJdN2d7Y7hfxgLxwAMh5.svg)](https://asciinema.org/a/bVCQzYJdN2d7Y7hfxgLxwAMh5)
 ## Download to designated directory
 
-    page-loader --output example2 https://ru.hexlet.io/courses
+    page-loader -o demo/ https://page-loader.hexlet.repl.co/
+
+[![asciicast](https://asciinema.org/a/ofN0lkj4tPCQeAvmcZrWllBHj.svg)](https://asciinema.org/a/ofN0lkj4tPCQeAvmcZrWllBHj)
 
 
 ## Download with verbose output
 
-    page-loader --output example2 https://ru.hexlet.io/courses -v debug
+    page-loader -o demo/ https://page-loader.hexlet.repl.co/ -v debug
 
-
+[![asciicast](https://asciinema.org/a/NTQwDXAQ3MDBZDQLTjMA5a3BQ.svg)](https://asciinema.org/a/NTQwDXAQ3MDBZDQLTjMA5a3BQ)

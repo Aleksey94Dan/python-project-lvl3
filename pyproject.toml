@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "0.1.2"
+version = "0.1.5"
 description = "A utility for downloading the specified address from the network. The utility downloads all the resources specified on the page and changes the page so that it starts referring to local versions."
 authors = ["Aleksey Danilchenko <danilchenko.aleksey94@gmail.com>"]
 packages=[
@@ -21,7 +21,6 @@ python = "^3.7"
 requests = "^2.24.0"
 bs4 = "^0.0.1"
 lxml = "^4.6.1"
-PyYAML = "^5.3.1"
 progress = "^1.5"
 
 [tool.poetry.dev-dependencies]
