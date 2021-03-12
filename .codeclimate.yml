@@ -1,4 +1,10 @@
-
 version: "2"
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+        python:
+          python_version: 3
 exclude_patterns:
  - "page_loader/__init__.py"
