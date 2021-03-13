@@ -23,7 +23,7 @@ def get_parser() -> argparse.ArgumentParser:
         prog='page-loader',
         description=(
             'Downloads a page from the network at the specified '
-            'address and puts it in the specified folder'  # noqa: WPS326
+            'address and puts it in the specified folder'
         ),
     )
     parser.add_argument(
