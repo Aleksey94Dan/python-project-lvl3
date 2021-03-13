@@ -11,7 +11,6 @@ from page_loader import errors, parsing, scrape
 from page_loader import url as my_url
 
 ENCODING = 'utf-8'
-LIMITER_LENGTH_URL = 2000
 
 
 def _compose(g, f):  # noqa: WPS111
@@ -64,7 +63,7 @@ def download(url: str, path_to_save: str) -> Path:  # noqa: WPS210
     if base_document:
         make_directory(to_save(base_directory))
 
-    prepared_html = parsing.prepare_html(base_document)  # type: ignore
+    prepared_html = parsing.prepare_html(base_document)
     tags = parsing.find_tags(prepared_html)
 
     links = parsing.get_urls(tags)
