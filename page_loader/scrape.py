@@ -16,8 +16,9 @@ from requests.exceptions import (
 from page_loader import errors
 
 
-def progress_bar(function):  # noqa: D103
-    @wraps(function)  # noqa: WPS430
+def progress_bar(function):
+    """Add loading display."""
+    @wraps(function)
     def wrapped(args):
         with LineSpinner(args) as pb_bar:
             lines = function(args)
@@ -35,8 +36,8 @@ def progress_bar(function):  # noqa: D103
 @progress_bar
 def get_content(url: str) -> Iterator[Union[str, bytes]]:
     """Pull page content."""
-    try:  # noqa: WPS225
-        response = requests.get(url, stream=True)
+    try:
+        response = requests.get(url)
     except ConnectionError as err1:
         raise errors.DownloadError(
             'An error occurred connecting to {0}'.format(url),
