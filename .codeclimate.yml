@@ -8,4 +8,3 @@ plugins:
           python_version: 3
 exclude_patterns:
  - "page_loader/scripts/*.py"
- - "page_loader/__init__.py"
