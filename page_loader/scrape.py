@@ -1,11 +1,9 @@
 # -*- coding:utf-8 -*-
 
 """The module sends HTTP requests to the content."""
-from functools import wraps
 from typing import Union
 
 import requests
-from progress.spinner import LineSpinner
 from requests.exceptions import (
     ConnectionError,
     InvalidSchema,
