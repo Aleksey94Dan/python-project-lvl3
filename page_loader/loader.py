@@ -9,6 +9,7 @@ from typing import Callable, Union
 
 from page_loader import errors, parsing, scrape
 from page_loader import url as my_url
+from progress.bar import Bar
 
 ENCODING = 'utf-8'
 
@@ -74,8 +75,13 @@ def download(url: str, path_to_save: str) -> Path:  # noqa: WPS210
     sorted_urls = [url for _, _, url in tags]
     base_document = parsing.modify(prepared_html, tags, for_changed_url)
     store(to_save(base_name), base_document)
-    for sorted_url in sorted_urls:
-        local_doc = scrape.get_content(sorted_url)
-        local_name = for_changed_url(sorted_url)
-        store(to_save(local_name), local_doc)
+    with Bar('Processing', max=len(sorted_urls), suffix='%(percent)d%%') as bar:
+        for sorted_url in sorted_urls:
+            local_doc = scrape.get_content(sorted_url)
+            local_name = for_changed_url(sorted_url)
+            try:
+                store(to_save(local_name), local_doc)
+            except errors.DownloadError:
+                pass
+            bar.next()
     return to_save(base_name)
