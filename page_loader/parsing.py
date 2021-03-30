@@ -3,7 +3,7 @@
 """Parse the page and get local resources."""
 
 import re
-from typing import Any, Iterable, List
+from typing import Any, Iterable, List, Union
 
 import bs4
 from bs4 import BeautifulSoup
@@ -16,7 +16,7 @@ UTF = 'utf-8'
 FORMATTER = 'html5'
 
 
-def prepare_html(html: str) -> bs4.BeautifulSoup:
+def prepare_html(html: Union[str, bytes]) -> bs4.BeautifulSoup:
     """Prepare the page for parsing."""
     return BeautifulSoup(html, features=PARSER)
 
