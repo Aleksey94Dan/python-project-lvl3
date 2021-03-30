@@ -43,7 +43,6 @@ def main() -> None:  # noqa: WPS210, WPS213
         logging.info(
             'Page loading completed successfully to {0}'.format(path_to_page),
         )
-    print(exit_code)
     sys.exit(exit_code)
 
 
