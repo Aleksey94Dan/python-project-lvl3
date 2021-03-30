@@ -11,8 +11,6 @@ from page_loader import cli, errors, loader, my_logging
 EXIT_SUCCES = 0
 EXIT_FAILURE = 1
 
-my_print = print
-
 
 def main() -> None:  # noqa: WPS210, WPS213
     """Run a code."""
@@ -42,7 +40,9 @@ def main() -> None:  # noqa: WPS210, WPS213
         logging.debug(str(err4.__cause__), exc_info=True)
         logging.error(err4.message)
     else:
-        my_print('Page loading completed successfully to {0}'.format(path_to_page))
+        logging.info(
+            'Page loading completed successfully to {0}'.format(path_to_page),
+        )
     sys.exit(exit_code)
 
 
