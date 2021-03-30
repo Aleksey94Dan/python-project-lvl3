@@ -36,13 +36,14 @@ def main() -> None:  # noqa: WPS210, WPS213
     except errors.DownloadNetworkError as err3:
         logging.debug(str(err3.__cause__), exc_info=True)
         logging.error(err3.message)
-    except errors.DownloadFileError as err4:
+    except errors.DownloadError as err4:
         logging.debug(str(err4.__cause__), exc_info=True)
         logging.error(err4.message)
     else:
         logging.info(
             'Page loading completed successfully to {0}'.format(path_to_page),
         )
+    print(exit_code)
     sys.exit(exit_code)
 
 
