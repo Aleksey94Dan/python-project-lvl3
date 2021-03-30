@@ -19,6 +19,8 @@ def setup(level: Optional[str]):
         log_level = logging.DEBUG
     elif level == ERROR:
         log_level = logging.ERROR
+    else:
+        log_level = logging.CRITICAL
 
     logger = logging.getLogger()
     logger.setLevel(log_level)
