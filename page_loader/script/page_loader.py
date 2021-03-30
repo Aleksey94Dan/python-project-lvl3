@@ -40,7 +40,7 @@ def main() -> None:  # noqa: WPS210, WPS213
         logging.debug(str(err4.__cause__), exc_info=True)
         logging.error(err4.message)
     else:
-        logging.info(
+        print(  # noqa: WPS421
             'Page loading completed successfully to {0}'.format(path_to_page),
         )
     sys.exit(exit_code)
