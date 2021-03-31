@@ -48,8 +48,7 @@ Also you must have pip installed - The Python Package Installer.
 
     page-loader -o demo/ https://page-loader.hexlet.repl.co/
 
-[![asciicast](https://asciinema.org/a/ofN0lkj4tPCQeAvmcZrWllBHj.svg)](https://asciinema.org/a/ofN0lkj4tPCQeAvmcZrWllBHj)
-
+[![asciicast](https://asciinema.org/a/9eBIX2xYDgFpIoqqgohlc3x1J.svg)](https://asciinema.org/a/9eBIX2xYDgFpIoqqgohlc3x1J)
 
 ## Download with verbose output
 
