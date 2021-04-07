@@ -78,9 +78,7 @@ def download(url: str, path_to_save: str) -> Path:  # noqa: WPS210
     sorted_urls = [url for _, _, url in tags]
     base_document = parsing.modify(prepared_html, tags, for_changed_url)
     store(to_save(base_name), base_document)
-    with Bar(
-        DOWNLOAD, max=len(sorted_urls), suffix='%(percent)d%%',
-    ) as pb_bar:
+    with Bar(DOWNLOAD, max=len(sorted_urls), suffix='%(percent)d%%') as pb_bar:
         for sorted_url in sorted_urls:
             local_doc = scrape.get_content(sorted_url)
             local_name = for_changed_url(sorted_url)

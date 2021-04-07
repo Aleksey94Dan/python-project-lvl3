@@ -10,10 +10,7 @@ def test_get_urls(html, expected_urls):
     """Test getting urls."""
     prepared_html = parsing.prepare_html(html)
     tags = parsing.find_tags(prepared_html)
-    actually_urls = parsing.get_urls(tags)
-
-    actually_urls.sort()
-    expected_urls.sort()
+    actually_urls = set(parsing.get_urls(tags))
 
     assert expected_urls == actually_urls
 

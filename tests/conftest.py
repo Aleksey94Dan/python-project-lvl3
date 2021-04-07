@@ -72,25 +72,25 @@ def js():
 @pytest.fixture()
 def expected_urls():
     """Return urls for paring case."""
-    return [
+    return {
         'https://cdn2.hexlet.io/assets/menu.css',
         '/assets/application.css',
         '/courses',
         '/assets/professions/nodejs.png',
         'https://js.stripe.com/v3/',
         'https://ru.hexlet.io/packs/js/runtime.js',
-    ]
+    }
 
 
 @pytest.fixture()
-def expected_file_name():
+def expected_file_names():
     """Return name of local resource."""
-    return [
+    return {
         'ru-hexlet-io-courses.html',
         'ru-hexlet-io-assets-professions-nodejs.png',
         'ru-hexlet-io-assets-application.css',
         'ru-hexlet-io-packs-js-runtime.js',
-    ]
+    }
 
 
 @pytest.fixture()
