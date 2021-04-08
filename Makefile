@@ -16,4 +16,9 @@ package-install:
 		pip install --user dist/*.whl
 check:
 		@poetry check
-.PHONY: install test lint check
+
+clean:
+		find . -type f -name *.pyc -delete
+		find . -type d -name __pycache__ -delete
+
+.PHONY: install test lint check clean
